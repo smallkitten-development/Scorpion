@@ -2,6 +2,8 @@
 
 console.log('scorpion-engine 1.0');
 
+var basic = "basic";
+
 function spnLoadThree(location) { // loads three.js into the current page
 	three = document.createElement("script");
 	three.src = location;
@@ -9,6 +11,13 @@ function spnLoadThree(location) { // loads three.js into the current page
 }
 
 // ^^ loads three too late
+
+function animate() {
+	requestAnimationFrame(animate);
+	spnRenderer.render(spnCreateScene, spnCamera); // render camera and scene
+
+	// console.log("calling anim");
+}
 
 function spnScene(alias, fov, x, y, z) {
 	window.spnCreateScene = new THREE.Scene();
@@ -29,9 +38,11 @@ function spnScene(alias, fov, x, y, z) {
 	spnCamera = new THREE.PerspectiveCamera(fov, WIDTH / HEIGHT, 2000);
 	spnCamera.position.set(x, y, z);
 	spnCreateScene.add(spnCamera);
+
+	animate();
 }
 
-function spnBasicCube(material, clr, l, w, depth, x, y, z) { // draw a basic cube and render it
+function spnCube(material, clr, l, w, depth, x, y, z) { // draw a basic cube and render it
 	if (material == "basic") {
 		var spnBasicCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshBasicMaterial({color: clr}));
 		spnBasicCube.position.x = x;
@@ -39,10 +50,6 @@ function spnBasicCube(material, clr, l, w, depth, x, y, z) { // draw a basic cub
 		spnBasicCube.position.z = z;
 		spnCreateScene.add(spnBasicCube);
 
-		spnRenderer.render(spnBasicCube);
-
 		console.log(spnBasicCube);
-
-		// this should end up making a cube but throws an error rn
 	}
 }
