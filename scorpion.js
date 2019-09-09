@@ -2,6 +2,7 @@
 
 console.log('scorpion-engine 1.0');
 
+var dynamic = false; // set to false by default unless stated otherwise by the scene creator.
 var basic = "basic";
 
 function spnLoadThree(location) { // loads three.js into the current page
@@ -12,6 +13,8 @@ function spnLoadThree(location) { // loads three.js into the current page
 
 // ^^ loads three too late
 
+window.addEventListener('resize', resizeScene, false); // event lister for resizing the scene
+
 function animate() {
 	requestAnimationFrame(animate);
 	spnRenderer.render(spnCreateScene, spnCamera); // render camera and scene
@@ -19,7 +22,7 @@ function animate() {
 	// console.log("calling anim");
 }
 
-function spnScene(alias, fov, x, y, z) {
+function spnScene(alias, dyn, fov, x, y, z) {
 	window.spnCreateScene = new THREE.Scene();
 	var WIDTH = window.innerWidth, HEIGHT = window.innerHeight;
 
@@ -39,7 +42,23 @@ function spnScene(alias, fov, x, y, z) {
 	spnCamera.position.set(x, y, z);
 	spnCreateScene.add(spnCamera);
 
+	if (dyn == true) {
+		dynamic = true;
+	} else {
+		console.warn('dynamic scene scaling has been disabled. Any changes to window size will no longer affect the size of the scene.');
+	}
+
+	console.log('%cscorpion has created a scene sucessfully.', 'background: green; color: white; display: block;');
+
 	animate();
+}
+
+function resizeScene() {
+	if(dynamic == true) {
+		spnRenderer.setSize(window.innerWidth, window.innerHeight);
+	} else {
+		return;
+	}
 }
 
 function spnCube(material, clr, l, w, depth, x, y, z) { // draw a basic cube and render it
@@ -49,6 +68,8 @@ function spnCube(material, clr, l, w, depth, x, y, z) { // draw a basic cube and
 		spnBasicCube.position.y = y;
 		spnBasicCube.position.z = z;
 		spnCreateScene.add(spnBasicCube);
+
+		console.log('%cscorpion has created a cube object sucessfully.', 'background: green; color: white; display: block;');
 
 		console.log(spnBasicCube);
 	}
