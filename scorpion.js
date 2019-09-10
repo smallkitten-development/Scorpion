@@ -2,6 +2,13 @@
 
 console.log('scorpion-engine version 1');
 
+var stats = new Stats();
+stats.showPanel(0);
+
+function spnStats() {
+	document.body.appendChild(stats.dom);
+}
+
 var dynamic = false; // set to false by default unless stated otherwise by the scene creator.
 var basic = "basic";
 var ambient = "ambient";
@@ -30,6 +37,8 @@ function exampleScene() { // this renders a cube and a light
 }
 
 function animate() {
+	stats.begin(); // start fps monitor
+	
 	requestAnimationFrame(animate);
 	spnRenderer.render(spnCreateScene, spnCamera); // render camera and scene
 
@@ -37,6 +46,8 @@ function animate() {
 		spnBasicCubeGlobal.rotation.x += basicCubeAnimationX;
 		spnBasicCubeGlobal.rotation.y += basicCubeAnimationY;
 	}
+
+	stats.end(); // end fps monitor per frame
 }
 
 function spnAnimate(object, x, y) { // adds animation to created objects
