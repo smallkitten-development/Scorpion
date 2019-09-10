@@ -1,9 +1,16 @@
 // Scorpion game engine! Made by nathan.
 
-console.log('scorpion-engine 1.0');
+console.log('scorpion-engine version 1');
 
 var dynamic = false; // set to false by default unless stated otherwise by the scene creator.
 var basic = "basic";
+var ambient = "ambient";
+
+var animateBaiscCubeObject = false;
+var basicCubeAnimationX;
+var basicCubeAnimationY;
+
+var spnBasicCubeGlobal;
 
 function spnLoadThree(location) { // loads three.js into the current page
 	three = document.createElement("script");
@@ -15,11 +22,34 @@ function spnLoadThree(location) { // loads three.js into the current page
 
 window.addEventListener('resize', resizeScene, false); // event lister for resizing the scene
 
+function exampleScene() { // this renders a cube and a light
+	spnScene(true, true, 80, 0, 0, 0);
+	spnCube(basic, 0xffffff, 5, 5, 5, 0, 0, -10, true);
+	spnLight(ambient, 0xffffff);
+	spnAnimate('spnBasicCube', 0.025, 0.025);
+}
+
 function animate() {
 	requestAnimationFrame(animate);
 	spnRenderer.render(spnCreateScene, spnCamera); // render camera and scene
 
-	// console.log("calling anim");
+	if (animateBaiscCubeObject == true) {
+		spnBasicCubeGlobal.rotation.x += basicCubeAnimationX;
+		spnBasicCubeGlobal.rotation.y += basicCubeAnimationY;
+	}
+}
+
+function spnAnimate(object, x, y) { // adds animation to created objects
+	if (object == 'spnBasicCube') {
+		animateBaiscCubeObject = true;
+
+		basicCubeAnimationX = x;
+		basicCubeAnimationY = y;
+
+		console.log('animation added to ' + object + ' with an X axis rotation of ' + basicCubeAnimationX + ' and a Y axis rotation of ' + basicCubeAnimationY + ' per frame.');
+	} else {
+		return;
+	}
 }
 
 function spnScene(alias, dyn, fov, x, y, z) {
@@ -27,7 +57,7 @@ function spnScene(alias, dyn, fov, x, y, z) {
 	var WIDTH = window.innerWidth, HEIGHT = window.innerHeight;
 
 	if (alias == false) {
-		console.warn('spnRenderer scene antialias set to ' + alias + ". Please check your code to make sure it's correct.");
+		console.warn('spnRenderer scene antialias set to ' + alias + ". Please make sure you meant to disable this.");
 	}
 
 	spnRenderer = new THREE.WebGLRenderer({
@@ -38,7 +68,7 @@ function spnScene(alias, dyn, fov, x, y, z) {
 
 	// create camera
 
-	spnCamera = new THREE.PerspectiveCamera(fov, WIDTH / HEIGHT, 2000);
+	spnCamera = new THREE.PerspectiveCamera(fov, WIDTH / HEIGHT, 0.1, 2000);
 	spnCamera.position.set(x, y, z);
 	spnCreateScene.add(spnCamera);
 
@@ -61,9 +91,25 @@ function resizeScene() {
 	}
 }
 
-function spnCube(material, clr, l, w, depth, x, y, z) { // draw a basic cube and render it
+// lighting 
+
+function spnLight(type, color) {
+	if (type == ambient) {
+		var spnAmbientLight = new THREE.AmbientLight(color);
+		spnCreateScene.add(spnAmbientLight);
+
+		console.log('%cscorpion has created an abient light object sucessfully.', 'background: green; color: white; display: block;');
+
+		console.log(spnAmbientLight);
+		spnAmbientLightGlobal = spnAmbientLight; // these are made into global variables so they can be changed via animate();
+	} else {
+		console.warn('no type of light specified');
+	}
+}
+
+function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a basic cube and render it
 	if (material == "basic") {
-		var spnBasicCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshBasicMaterial({color: clr}));
+		var spnBasicCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshBasicMaterial({color: clr, wireframe: wirefrm}));
 		spnBasicCube.position.x = x;
 		spnBasicCube.position.y = y;
 		spnBasicCube.position.z = z;
@@ -72,5 +118,6 @@ function spnCube(material, clr, l, w, depth, x, y, z) { // draw a basic cube and
 		console.log('%cscorpion has created a cube object sucessfully.', 'background: green; color: white; display: block;');
 
 		console.log(spnBasicCube);
+		spnBasicCubeGlobal = spnBasicCube;
 	}
 }
