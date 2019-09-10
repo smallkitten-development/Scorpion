@@ -11,13 +11,20 @@ function spnStats() {
 
 var dynamic = false; // set to false by default unless stated otherwise by the scene creator.
 var basic = "basic";
+var lambert = "lambert";
 var ambient = "ambient";
+var directional = "directional";
 
 var animateBaiscCubeObject = false;
+var animateLambertCubeObject = false;
+
 var basicCubeAnimationX;
 var basicCubeAnimationY;
+var lambertCubeAnimationX;
+var lambertCubeAnimationY;
 
 var spnBasicCubeGlobal;
+var spnLambertCubeGlobal;
 
 function spnLoadThree(location) { // loads three.js into the current page
 	three = document.createElement("script");
@@ -31,9 +38,11 @@ window.addEventListener('resize', resizeScene, false); // event lister for resiz
 
 function exampleScene() { // this renders a cube and a light
 	spnScene(true, true, 80, 0, 0, 0);
-	spnCube(basic, 0xffffff, 5, 5, 5, 0, 0, -10, true);
-	spnLight(ambient, 0xffffff);
-	spnAnimate('spnBasicCube', 0.025, 0.025);
+	spnCube(lambert, 0xffffff, 5, 5, 5, 0, 0, -10, false);
+	spnLight(directional, 0xffffff, 0, 0, 1, 1, true);
+	spnAnimate('spnLambertCube', 0.025, 0.025);
+
+	console.warn('example scene has been created');
 }
 
 function animate() {
@@ -47,6 +56,11 @@ function animate() {
 		spnBasicCubeGlobal.rotation.y += basicCubeAnimationY;
 	}
 
+	if (animateLambertCubeObject == true) {
+		spnLambertCubeGlobal.rotation.x += lambertCubeAnimationX;
+		spnLambertCubeGlobal.rotation.y += lambertCubeAnimationY;
+	}
+
 	stats.end(); // end fps monitor per frame
 }
 
@@ -58,8 +72,11 @@ function spnAnimate(object, x, y) { // adds animation to created objects
 		basicCubeAnimationY = y;
 
 		console.log('animation added to ' + object + ' with an X axis rotation of ' + basicCubeAnimationX + ' and a Y axis rotation of ' + basicCubeAnimationY + ' per frame.');
-	} else {
-		return;
+	} else if (object == 'spnLambertCube') {
+		animateLambertCubeObject = true;
+
+		lambertCubeAnimationX = x;
+		lambertCubeAnimationY = y;
 	}
 }
 
@@ -104,7 +121,7 @@ function resizeScene() {
 
 // lighting 
 
-function spnLight(type, color) {
+function spnLight(type, color, x, y, z, intensity, shadow) {
 	if (type == ambient) {
 		var spnAmbientLight = new THREE.AmbientLight(color);
 		spnCreateScene.add(spnAmbientLight);
@@ -113,8 +130,16 @@ function spnLight(type, color) {
 
 		console.log(spnAmbientLight);
 		spnAmbientLightGlobal = spnAmbientLight; // these are made into global variables so they can be changed via animate();
-	} else {
-		console.warn('no type of light specified');
+	} else if (type == directional) {
+		var spnDirectionalLight = new THREE.DirectionalLight(color, intensity);
+		spnDirectionalLight.position.set(x, y, z);
+		spnDirectionalLight.castShadow = shadow;
+		spnCreateScene.add(spnDirectionalLight);
+
+		console.log('%cscorpion has created an directional light object sucessfully.', 'background: green; color: white; display: block;');
+
+		console.log(spnDirectionalLight);
+		spnDirectionalLightGlobal = spnDirectionalLight;
 	}
 }
 
@@ -126,9 +151,22 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a basic
 		spnBasicCube.position.z = z;
 		spnCreateScene.add(spnBasicCube);
 
-		console.log('%cscorpion has created a cube object sucessfully.', 'background: green; color: white; display: block;');
+		console.log('%cscorpion has created a basic cube object sucessfully.', 'background: green; color: white; display: block;');
 
 		console.log(spnBasicCube);
 		spnBasicCubeGlobal = spnBasicCube;
+	}
+
+	if (material == "lambert") {
+		var spnLambertCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshLambertMaterial({color: clr, wireframe: wirefrm}));
+		spnLambertCube.position.x = x;
+		spnLambertCube.position.y = y;
+		spnLambertCube.position.z = z;
+		spnCreateScene.add(spnLambertCube);
+
+		console.log('%cscorpion has created a lambert cube object sucessfully.', 'background: green; color: white; display: block;');
+
+		console.log(spnLambertCube);
+		spnLambertCubeGlobal = spnLambertCube;
 	}
 }
