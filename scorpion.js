@@ -9,22 +9,42 @@ function spnStats() {
 	document.body.appendChild(stats.dom);
 }
 
+var white = 0xffffff;
+var black = 0x000000;
+
 var dynamic = false; // set to false by default unless stated otherwise by the scene creator.
+
+// object material types
+
 var basic = "basic";
 var lambert = "lambert";
+var phong = "phong";
+
+// lighting types
+
 var ambient = "ambient";
 var directional = "directional";
+var point = "point";
+
+// animation variables
 
 var animateBaiscCubeObject = false;
 var animateLambertCubeObject = false;
+var animatePhongCubeObject = false;
 
 var basicCubeAnimationX;
 var basicCubeAnimationY;
 var lambertCubeAnimationX;
 var lambertCubeAnimationY;
+var phongCubeAnimationX;
+var phongCubeAnimationY;
+
+// global objects
 
 var spnBasicCubeGlobal;
 var spnLambertCubeGlobal;
+var spnPhongCubeGlobal;
+
 
 function spnLoadThree(location) { // loads three.js into the current page
 	three = document.createElement("script");
@@ -37,10 +57,10 @@ function spnLoadThree(location) { // loads three.js into the current page
 window.addEventListener('resize', resizeScene, false); // event lister for resizing the scene
 
 function exampleScene() { // this renders a cube and a light
-	spnScene(true, true, 80, 0, 0, 0);
-	spnCube(lambert, 0xffffff, 5, 5, 5, 0, 0, -10, false);
-	spnLight(directional, 0xffffff, 0, 0, 1, 1, true);
-	spnAnimate('spnLambertCube', 0.025, 0.025);
+	spnScene(true, true, 80, 0, 0, 0, black);
+	spnCube(phong, 0xffffff, 5, 5, 5, 0, 0, -10, false);
+	spnLight(point, 0xffffff, 0, 0, 1, 1, true);
+	spnAnimate('spnPhongCube', 0.025, 0.025);
 
 	console.warn('example scene has been created');
 }
@@ -61,6 +81,11 @@ function animate() {
 		spnLambertCubeGlobal.rotation.y += lambertCubeAnimationY;
 	}
 
+	if (animatePhongCubeObject == true) {
+		spnPhongCubeGlobal.rotation.x += phongCubeAnimationX;
+		spnPhongCubeGlobal.rotation.y += phongCubeAnimationY;
+	}
+
 	stats.end(); // end fps monitor per frame
 }
 
@@ -72,17 +97,31 @@ function spnAnimate(object, x, y) { // adds animation to created objects
 		basicCubeAnimationY = y;
 
 		console.log('animation added to ' + object + ' with an X axis rotation of ' + basicCubeAnimationX + ' and a Y axis rotation of ' + basicCubeAnimationY + ' per frame.');
-	} else if (object == 'spnLambertCube') {
+	}
+
+	if (object == 'spnLambertCube') {
 		animateLambertCubeObject = true;
 
 		lambertCubeAnimationX = x;
 		lambertCubeAnimationY = y;
+
+		console.log('animation added to ' + object + ' with an X axis rotation of ' + lambertCubeAnimationX + ' and a Y axis rotation of ' + lambertCubeAnimationY + ' per frame.');
+	}
+
+	if (object == 'spnPhongCube') {
+		animatePhongCubeObject = true;
+
+		phongCubeAnimationX = x;
+		phongCubeAnimationY = y;
+
+		console.log('animation added to ' + object + ' with an X axis rotation of ' + phongCubeAnimationX + ' and a Y axis rotation of ' + phongCubeAnimationY + ' per frame.');
 	}
 }
 
-function spnScene(alias, dyn, fov, x, y, z) {
+function spnScene(alias, dyn, fov, x, y, z, backgroundColor) {
 	window.spnCreateScene = new THREE.Scene();
 	var WIDTH = window.innerWidth, HEIGHT = window.innerHeight;
+	spnCreateScene.background = new THREE.Color(backgroundColor);
 
 	if (alias == false) {
 		console.warn('spnRenderer scene antialias set to ' + alias + ". Please make sure you meant to disable this.");
@@ -140,10 +179,20 @@ function spnLight(type, color, x, y, z, intensity, shadow) {
 
 		console.log(spnDirectionalLight);
 		spnDirectionalLightGlobal = spnDirectionalLight;
+	} else if (type == point) {
+		var spnPointLight = new THREE.PointLight(color, intensity);
+		spnPointLight.position.set(x, y, z);
+		spnPointLight.castShadow = shadow;
+		spnCreateScene.add(spnPointLight);
+
+		console.log('%cscorpion has created an point light object sucessfully.', 'background: green; color: white; display: block;');
+
+		console.log(spnPointLight);
+		spnPointLightGlobal = spnPointLight;
 	}
 }
 
-function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a basic cube and render it
+function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a cube and render it
 	if (material == "basic") {
 		var spnBasicCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshBasicMaterial({color: clr, wireframe: wirefrm}));
 		spnBasicCube.position.x = x;
@@ -168,5 +217,18 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a basic
 
 		console.log(spnLambertCube);
 		spnLambertCubeGlobal = spnLambertCube;
+	}
+
+	if (material == "phong") {
+		var spnPhongCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshLambertMaterial({color: clr, wireframe: wirefrm}));
+		spnPhongCube.position.x = x;
+		spnPhongCube.position.y = y;
+		spnPhongCube.position.z = z;
+		spnCreateScene.add(spnPhongCube);
+
+		console.log('%cscorpion has created a phong cube object sucessfully.', 'background: green; color: white; display: block;');
+
+		console.log(spnPhongCube);
+		spnPhongCubeGlobal = spnPhongCube;
 	}
 }
