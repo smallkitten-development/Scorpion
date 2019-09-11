@@ -10,5 +10,5 @@ For helpful information and documentation, make sure to check the wiki. You can 
 ### Aknowledgements
 Scorpion uses several open source projects to work.
 
-Three.js - mrdoob
-Stats.js - mrdoob
+* Three.js - mrdoob
+* Stats.js - mrdoob
