@@ -1,6 +1,7 @@
 // Scorpion game engine! Made by nathan.
 
-console.log('scorpion-engine version 1');
+console.log("%cscorpion-engine version 1", "text-shadow: 3px 2px red; font-size: 15px;");
+console.log("%cmade \n %c by \n %c smallKitten development", "line-height: 0.8;", "line-height: 1.5;", "line-height: 1;")
 
 var stats = new Stats();
 stats.showPanel(0);
