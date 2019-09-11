@@ -1,6 +1,6 @@
 // Scorpion game engine! Made by nathan.
 
-console.log("%cscorpion-engine version 1", "text-shadow: 3px 2px red; font-size: 15px;");
+console.log("%cscorpion-engine version 1-1 beta", "text-shadow: 3px 2px red; font-size: 15px;");
 console.log("%cmade \n %c by \n %c smallKitten development", "line-height: 0.8;", "line-height: 1.5;", "line-height: 1;")
 
 var stats = new Stats();
@@ -10,8 +10,19 @@ function spnStats() {
 	document.body.appendChild(stats.dom);
 }
 
+// colors so you dont have to memorize a million hex codes
+
 var white = 0xffffff;
 var black = 0x000000;
+var red = 0xff0000;
+var orange = 0xffa500;
+var yellow = 0xffff00;
+var green = 0x008000;
+var blue = 0x0000ff;
+var purple = 0x800080;
+
+var walkSpeed;
+var lookSpeed;
 
 var dynamic = false; // set to false by default unless stated otherwise by the scene creator.
 
@@ -46,6 +57,14 @@ var spnBasicCubeGlobal;
 var spnLambertCubeGlobal;
 var spnPhongCubeGlobal;
 
+window.addEventListener('keydown', keyDown);
+window.addEventListener('keyup', keyUp);
+
+var cameraControl = false;
+var controlKeyboard = false;
+
+var keyboard = 'keyboard';
+var keyboardKey = {};
 
 function spnLoadThree(location) { // loads three.js into the current page
 	three = document.createElement("script");
@@ -58,12 +77,36 @@ function spnLoadThree(location) { // loads three.js into the current page
 window.addEventListener('resize', resizeScene, false); // event lister for resizing the scene
 
 function exampleScene() { // this renders a cube and a light
-	spnScene(true, true, 80, 0, 0, 0, black);
-	spnCube(phong, 0xffffff, 5, 5, 5, 0, 0, -10, false);
-	spnLight(point, 0xffffff, 0, 0, 1, 1, true);
+	spnScene(true, true, 80, 0, 0, 0, 0xba55d3);
+	spnCube(phong, 0xba55d3, 5, 5, 5, 0, 0, -10, false);
+	spnLight(point, white, 0, 0, -2.5, 1, true);
 	spnAnimate('spnPhongCube', 0.025, 0.025);
+	spnControl(true, keyboard, 0.1, 0.01);
+	spnFloor(lambert, 15, 15, 0, -5, -10, 15, white, false);
 
-	console.warn('example scene has been created');
+	console.log('example scene has been created');
+}
+
+function spnControl(enabled, type, wlkSpeed, lkSpeed) {
+	if (enabled == true) {
+		cameraControl = true;
+
+		walkSpeed = wlkSpeed;
+		lookSpeed = lkSpeed;
+	}
+
+	if (type == keyboard) {
+		controlKeyboard = true;
+	}
+}
+
+function keyDown(event) { // keyboard keyup/down controls
+	keyboardKey[event.keyCode] = true;
+	// console.log(keyboardKey);
+}
+
+function keyUp(event) {
+	keyboardKey[event.keyCode] = false;
 }
 
 function animate() {
@@ -71,6 +114,42 @@ function animate() {
 	
 	requestAnimationFrame(animate);
 	spnRenderer.render(spnCreateScene, spnCamera); // render camera and scene
+
+	if (cameraControl == true && controlKeyboard == true) {
+		if (keyboardKey[37]) { // left
+			spnCamera.rotation.y += Math.PI * lookSpeed;
+		}
+
+		if (keyboardKey[39]) { // right
+			spnCamera.rotation.y -= Math.PI * lookSpeed;
+		}
+
+		if (keyboardKey[38]) { // up
+			spnCamera.rotation.x += Math.PI * lookSpeed;
+		}
+
+		if (keyboardKey[40]) { // down
+			spnCamera.rotation.x -= Math.PI * lookSpeed;
+		}
+
+		if (keyboardKey[83]) { // backward
+			spnCamera.position.z += Math.PI * walkSpeed;
+		}
+
+		if (keyboardKey[87]) { // forward
+			spnCamera.position.z -= Math.PI * walkSpeed;
+		}
+
+		if (keyboardKey[65]) { // left
+			spnCamera.position.x -= Math.PI * walkSpeed;
+		}
+
+		if (keyboardKey[68]) { // right
+			spnCamera.position.x += Math.PI * walkSpeed;
+		}
+	}
+
+	// ^^ movement controls for the camera enabled by spnControl();
 
 	if (animateBaiscCubeObject == true) {
 		spnBasicCubeGlobal.rotation.x += basicCubeAnimationX;
@@ -201,6 +280,8 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a cube 
 		spnBasicCube.position.z = z;
 		spnCreateScene.add(spnBasicCube);
 
+		spnBasicCube.castShadow = true;
+
 		console.log('%cscorpion has created a basic cube object sucessfully.', 'background: green; color: white; display: block;');
 
 		console.log(spnBasicCube);
@@ -213,6 +294,8 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a cube 
 		spnLambertCube.position.y = y;
 		spnLambertCube.position.z = z;
 		spnCreateScene.add(spnLambertCube);
+
+		spnLambertCube.castShadow = true;
 
 		console.log('%cscorpion has created a lambert cube object sucessfully.', 'background: green; color: white; display: block;');
 
@@ -227,9 +310,48 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a cube 
 		spnPhongCube.position.z = z;
 		spnCreateScene.add(spnPhongCube);
 
+		spnPhongCube.castShadow = true;
+
 		console.log('%cscorpion has created a phong cube object sucessfully.', 'background: green; color: white; display: block;');
 
 		console.log(spnPhongCube);
 		spnPhongCubeGlobal = spnPhongCube;
+	}
+}
+
+function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
+	if (triangles > 100) {
+		console.warn('the floor triangles is very high. you may want to lower this number to increase performance.');
+	}
+
+	if (material == "basic") {
+		var spnBasicPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshBasicMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+
+		spnBasicPlane.position.x = x;
+		spnBasicPlane.position.y = y;
+		spnBasicPlane.position.z = z;
+
+		spnBasicPlane.material.side = THREE.DoubleSide;
+
+		spnBasicPlane.rotation.x = 90;
+
+		console.log(spnBasicPlane);
+		spnCreateScene.add(spnBasicPlane);
+	}
+
+	if (material == "lambert") {
+		var spnLambertPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshLambertMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+
+		spnLambertPlane.position.x = x;
+		spnLambertPlane.position.y = y;
+		spnLambertPlane.position.z = z;
+
+		spnLambertPlane.material.side = THREE.DoubleSide;
+		spnLambertPlane.receiveShadow = true;
+
+		spnLambertPlane.rotation.x = 90;
+
+		console.log(spnLambertPlane);
+		spnCreateScene.add(spnLambertPlane);
 	}
 }
