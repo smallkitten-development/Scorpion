@@ -10,8 +10,16 @@ function spnStats() {
 	document.body.appendChild(stats.dom);
 }
 
+// colors so you dont have to memorize a million hex codes
+
 var white = 0xffffff;
 var black = 0x000000;
+var red = 0xff0000;
+var orange = 0xffa500;
+var yellow = 0xffff00;
+var green = 0x008000;
+var blue = 0x0000ff;
+var purple = 0x800080;
 
 var dynamic = false; // set to false by default unless stated otherwise by the scene creator.
 
@@ -46,6 +54,14 @@ var spnBasicCubeGlobal;
 var spnLambertCubeGlobal;
 var spnPhongCubeGlobal;
 
+window.addEventListener('keydown', keyDown);
+window.addEventListener('keyup', keyUp);
+
+var cameraControl = false;
+var controlKeyboard = false;
+
+var keyboard = 'keyboard';
+var keyboardKey = {};
 
 function spnLoadThree(location) { // loads three.js into the current page
 	three = document.createElement("script");
@@ -58,7 +74,7 @@ function spnLoadThree(location) { // loads three.js into the current page
 window.addEventListener('resize', resizeScene, false); // event lister for resizing the scene
 
 function exampleScene() { // this renders a cube and a light
-	spnScene(true, true, 80, 0, 0, 0, black);
+	spnScene(true, true, 80, 0, 0, 0, orange);
 	spnCube(phong, 0xffffff, 5, 5, 5, 0, 0, -10, false);
 	spnLight(point, 0xffffff, 0, 0, 1, 1, true);
 	spnAnimate('spnPhongCube', 0.025, 0.025);
@@ -66,11 +82,66 @@ function exampleScene() { // this renders a cube and a light
 	console.warn('example scene has been created');
 }
 
+function spnControl(enabled, type) {
+	if (enabled == true) {
+		cameraControl = true;
+	}
+
+	if (type == keyboard) {
+		controlKeyboard = true;
+	}
+}
+
+function keyDown(event) { // keyboard keyup/down controls
+	keyboardKey[event.keyCode] = true;
+	console.log(keyboardKey);
+}
+
+function keyUp(event) {
+	keyboardKey[event.keyCode] = false;
+}
+
 function animate() {
 	stats.begin(); // start fps monitor
 	
 	requestAnimationFrame(animate);
 	spnRenderer.render(spnCreateScene, spnCamera); // render camera and scene
+
+	if (cameraControl == true && controlKeyboard == true) {
+		if (keyboardKey[37]) { // left
+			spnCamera.rotation.y += Math.PI * 0.01;
+		}
+
+		if (keyboardKey[39]) { // right
+			spnCamera.rotation.y -= Math.PI * 0.01;
+		}
+
+		if (keyboardKey[38]) { // up
+			spnCamera.rotation.x += Math.PI * 0.01;
+		}
+
+		if (keyboardKey[40]) { // down
+			spnCamera.rotation.x -= Math.PI * 0.01;
+		}
+
+		if (keyboardKey[83]) { // backward
+			spnCamera.position.z += Math.PI * 0.05;
+		}
+
+		if (keyboardKey[87]) { // forward
+			spnCamera.position.z -= Math.PI * 0.05;
+		}
+
+		if (keyboardKey[65]) { // left
+			spnCamera.position.x -= Math.PI * 0.05;
+		}
+
+		if (keyboardKey[68]) { // right
+			spnCamera.position.x += Math.PI * 0.05;
+		}
+	}
+
+	// ^^ movement controls for the camera enabled by spnControl();
 
 	if (animateBaiscCubeObject == true) {
 		spnBasicCubeGlobal.rotation.x += basicCubeAnimationX;
