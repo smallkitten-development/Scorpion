@@ -1,6 +1,6 @@
 // Scorpion game engine! Made by nathan.
 
-console.log("%cscorpion-engine version 1", "text-shadow: 3px 2px red; font-size: 15px;");
+console.log("%cscorpion-engine version 1-1 beta", "text-shadow: 3px 2px red; font-size: 15px;");
 console.log("%cmade \n %c by \n %c smallKitten development", "line-height: 0.8;", "line-height: 1.5;", "line-height: 1;")
 
 var stats = new Stats();
@@ -20,6 +20,9 @@ var yellow = 0xffff00;
 var green = 0x008000;
 var blue = 0x0000ff;
 var purple = 0x800080;
+
+var walkSpeed;
+var lookSpeed;
 
 var dynamic = false; // set to false by default unless stated otherwise by the scene creator.
 
@@ -78,13 +81,18 @@ function exampleScene() { // this renders a cube and a light
 	spnCube(phong, 0xffffff, 5, 5, 5, 0, 0, -10, false);
 	spnLight(point, 0xffffff, 0, 0, 1, 1, true);
 	spnAnimate('spnPhongCube', 0.025, 0.025);
+	spnControl(true, keyboard, 0.1, 0.01);
+	spnFloor(basic, 15, 15, 0, -5, -10, 10, red, false);
 
 	console.warn('example scene has been created');
 }
 
-function spnControl(enabled, type) {
+function spnControl(enabled, type, wlkSpeed, lkSpeed) {
 	if (enabled == true) {
 		cameraControl = true;
+
+		walkSpeed = wlkSpeed;
+		lookSpeed = lkSpeed;
 	}
 
 	if (type == keyboard) {
@@ -109,35 +117,35 @@ function animate() {
 
 	if (cameraControl == true && controlKeyboard == true) {
 		if (keyboardKey[37]) { // left
-			spnCamera.rotation.y += Math.PI * 0.01;
+			spnCamera.rotation.y += Math.PI * lookSpeed;
 		}
 
 		if (keyboardKey[39]) { // right
-			spnCamera.rotation.y -= Math.PI * 0.01;
+			spnCamera.rotation.y -= Math.PI * lookSpeed;
 		}
 
 		if (keyboardKey[38]) { // up
-			spnCamera.rotation.x += Math.PI * 0.01;
+			spnCamera.rotation.x += Math.PI * lookSpeed;
 		}
 
 		if (keyboardKey[40]) { // down
-			spnCamera.rotation.x -= Math.PI * 0.01;
+			spnCamera.rotation.x -= Math.PI * lookSpeed;
 		}
 
 		if (keyboardKey[83]) { // backward
-			spnCamera.position.z += Math.PI * 0.05;
+			spnCamera.position.z += Math.PI * walkSpeed;
 		}
 
 		if (keyboardKey[87]) { // forward
-			spnCamera.position.z -= Math.PI * 0.05;
+			spnCamera.position.z -= Math.PI * walkSpeed;
 		}
 
 		if (keyboardKey[65]) { // left
-			spnCamera.position.x -= Math.PI * 0.05;
+			spnCamera.position.x -= Math.PI * walkSpeed;
 		}
 
 		if (keyboardKey[68]) { // right
-			spnCamera.position.x += Math.PI * 0.05;
+			spnCamera.position.x += Math.PI * walkSpeed;
 		}
 	}
 
@@ -302,5 +310,26 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a cube 
 
 		console.log(spnPhongCube);
 		spnPhongCubeGlobal = spnPhongCube;
+	}
+}
+
+function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
+	if (triangles > 100) {
+		console.warn('the floor triengles is very high. you may want to lower this number to increase preformance.');
+	}
+
+	if (material == "basic") {
+		var spnBasicPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshBasicMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+
+		spnBasicPlane.position.x = x;
+		spnBasicPlane.position.y = y;
+		spnBasicPlane.position.z = z;
+
+		spnBasicPlane.material.side = THREE.DoubleSide;
+
+		spnBasicPlane.rotation.x = 90;
+
+		console.log(spnBasicPlane);
+		spnCreateScene.add(spnBasicPlane);
 	}
 }
