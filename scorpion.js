@@ -105,11 +105,14 @@ window.addEventListener('resize', resizeScene, false); // event lister for resiz
 function exampleScene() { // this renders a cube and a light
 	spnScene(true, true, 80, 0, 0, 0, 0xba55d3);
 	spnCube(phong, 0xba55d3, 5, 5, 5, 0, 0, -10, false);
-	spnLight(point, white, 0, 0, 1, .8, true);
-	spnAnimate('spnPhongCube', 0.025, 0.025, 0.001, 0.001, 0.004);
-	spnAnimate('spnPointLight', 0, 0, 0, 0, -0.025);
+	spnLight(point, white, 0, 0, 1, 1, true);
+	spnAnimate('spnPhongCube', 0.025, 0.025, 0, 0, 0);
 	spnControl(true, keyboard, 0.1, 0.01);
 	spnFloor(phong, 15, 15, 0, -5, -10, 15, white, false);
+	spnWall(phong, 15, 15, 0, 2.5, -17.5, 0, 0, 15, white, false);
+	spnWall(phong, 15, 15, -7.5, 2.5, -10, 0, Math.PI / 2, 15, white, false);
+	spnWall(phong, 15, 15, 7.5, 2.5, -10, 0, -Math.PI / 2, 15, white, false);
+	spnFloor(phong, 15, 15, 0, 10, -10, 15, white, false);
 
 	console.log('example scene has been created');
 }
@@ -423,10 +426,12 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 
 		spnBasicPlane.material.side = THREE.DoubleSide;
 
-		spnBasicPlane.rotation.x = 90;
+		spnBasicPlane.rotation.x = -Math.PI / 2;
 
 		console.log(spnBasicPlane);
 		spnCreateScene.add(spnBasicPlane);
+
+		console.log('%cscorpion has created a basic floor sucessfully.', 'background: green; color: white; display: block;');
 	}
 
 	if (material == "lambert") {
@@ -439,10 +444,12 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 		spnLambertPlane.material.side = THREE.DoubleSide;
 		spnLambertPlane.receiveShadow = true;
 
-		spnLambertPlane.rotation.x = 90;
+		spnLambertPlane.rotation.x = -Math.PI / 2;
 
 		console.log(spnLambertPlane);
 		spnCreateScene.add(spnLambertPlane);
+
+		console.log('%cscorpion has created a lambert floor sucessfully.', 'background: green; color: white; display: block;');
 	}
 
 	if (material == "phong") {
@@ -455,9 +462,73 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 		spnPhongPlane.material.side = THREE.DoubleSide;
 		spnPhongPlane.receiveShadow = true;
 
-		spnPhongPlane.rotation.x = 90;
+		spnPhongPlane.rotation.x = -Math.PI / 2;
 
 		console.log(spnPhongPlane);
 		spnCreateScene.add(spnPhongPlane);
+
+		console.log('%cscorpion has created a phong floor sucessfully.', 'background: green; color: white; display: block;');
+	}
+}
+
+function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, clr, wirefrm) {
+	if (triangles > 100) {
+		console.warn('the wall triangles is very high. you may want to lower this number to increase performance.');
+	}
+
+	if (material == "basic") {
+		var spnBasicWallPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshBasicMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+
+		spnBasicWallPlane.position.x = x;
+		spnBasicWallPlane.position.y = y;
+		spnBasicWallPlane.position.z = z;
+
+		spnBasicWallPlane.material.side = THREE.DoubleSide;
+
+		spnBasicWallPlane.rotation.x = xRotate;
+		spnBasicWallPlane.rotation.y = yRotate;
+
+		console.log(spnBasicWallPlane);
+		spnCreateScene.add(spnBasicWallPlane);
+
+		console.log('%cscorpion has created a basic wall sucessfully.', 'background: green; color: white; display: block;');
+	}
+
+	if (material == "lambert") {
+		var spnLambertWallPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshLambertMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+
+		spnLambertWallPlane.position.x = x;
+		spnLambertWallPlane.position.y = y;
+		spnLambertWallPlane.position.z = z;
+
+		spnLambertWallPlane.material.side = THREE.DoubleSide;
+		spnLambertWallPlane.receiveShadow = true;
+
+		spnLambertWallPlane.rotation.x = xRotate;
+		spnLambertWallPlane.rotation.y = yRotate;
+
+		console.log(spnLambertWallPlane);
+		spnCreateScene.add(spnLambertWallPlane);
+
+		console.log('%cscorpion has created a lambert wall sucessfully.', 'background: green; color: white; display: block;');
+	}
+
+	if (material == "phong") {
+		var spnPhongWallPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshPhongMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+
+		spnPhongWallPlane.position.x = x;
+		spnPhongWallPlane.position.y = y;
+		spnPhongWallPlane.position.z = z;
+
+		spnPhongWallPlane.material.side = THREE.DoubleSide;
+		spnPhongWallPlane.receiveShadow = true;
+
+		spnPhongWallPlane.rotation.x = xRotate;
+		spnPhongWallPlane.rotation.y = yRotate;
+
+		console.log(spnPhongWallPlane);
+		spnCreateScene.add(spnPhongWallPlane);
+
+		console.log('%cscorpion has created a phong wall sucessfully.', 'background: green; color: white; display: block;');
 	}
 }
