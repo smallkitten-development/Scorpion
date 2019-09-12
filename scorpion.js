@@ -104,15 +104,15 @@ window.addEventListener('resize', resizeScene, false); // event lister for resiz
 
 function exampleScene() { // this renders a cube and a light
 	spnScene(true, true, 80, 0, 0, 0, 0xba55d3);
-	spnCube(phong, 0xba55d3, 5, 5, 5, 0, 0, -10, false);
+	spnCube(phong, 0xba55d3, 5, 5, 5, 0, 0, -10, true);
 	spnLight(point, white, 0, 0, 1, 1, true);
 	spnAnimate('spnPhongCube', 0.025, 0.025, 0, 0, 0);
 	spnControl(true, keyboard, 0.1, 0.01);
-	spnFloor(phong, 15, 15, 0, -5, -10, 15, white, false);
-	spnWall(phong, 15, 15, 0, 2.5, -17.5, 0, 0, 15, white, false);
-	spnWall(phong, 15, 15, -7.5, 2.5, -10, 0, Math.PI / 2, 15, white, false);
-	spnWall(phong, 15, 15, 7.5, 2.5, -10, 0, -Math.PI / 2, 15, white, false);
-	spnFloor(phong, 15, 15, 0, 10, -10, 15, white, false);
+	spnFloor(phong, 15, 15, 0, -5, -10, 42, white, true);
+	spnWall(phong, 15, 15, 0, 2.5, -17.5, 0, 0, 42, white, true);
+	spnWall(phong, 15, 15, -7.5, 2.5, -10, 0, Math.PI / 2, 42, white, true);
+	spnWall(phong, 15, 15, 7.5, 2.5, -10, 0, -Math.PI / 2, 42, white, true);
+	spnFloor(phong, 15, 15, 0, 10, -10, 42, white, true);
 
 	console.log('example scene has been created');
 }
