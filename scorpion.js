@@ -1,6 +1,6 @@
 // Scorpion game engine! Made by nathan.
 
-console.log("%cscorpion-engine version 1-1 beta", "text-shadow: 3px 2px red; font-size: 15px;");
+console.log("%cscorpion-engine version 1-2 beta", "text-shadow: 3px 2px red; font-size: 15px;");
 console.log("%cmade \n %c by \n %c smallKitten development", "line-height: 0.8;", "line-height: 1.5;", "line-height: 1;")
 
 var stats = new Stats();
@@ -104,9 +104,10 @@ window.addEventListener('resize', resizeScene, false); // event lister for resiz
 
 function exampleScene() { // this renders a cube and a light
 	spnScene(true, true, 80, 0, 0, 0, 0xba55d3);
-	spnCube(phong, 0xba55d3, 5, 5, 5, 0, 0, -10, true);
+	//spnCube(phong, 0xba55d3, 5, 5, 5, 0, 0, -10, true);
+	spnSphere(lambert, 3, 24, 24, white, 0, 0, -10, false);
 	spnLight(point, white, 0, 0, 1, 1, true);
-	spnAnimate('spnPhongCube', 0.025, 0.025, 0, 0, 0);
+	// spnAnimate('spnPhongCube', 0.025, 0.025, 0, 0, 0);
 	spnControl(true, keyboard, 0.1, 0.01);
 	spnFloor(phong, 15, 15, 0, -5, -10, 42, white, true);
 	spnWall(phong, 15, 15, 0, 2.5, -17.5, 0, 0, 42, white, true);
@@ -409,6 +410,32 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a cube 
 
 		console.log(spnPhongCube);
 		spnPhongCubeGlobal = spnPhongCube;
+	}
+}
+
+function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z, wirefrm) {
+	if (material == 'basic') {
+		var spnBasicSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshBasicMaterial({color: clr, wireframe: wirefrm}));
+		spnBasicSphere.position.x = x;
+		spnBasicSphere.position.y = y;
+		spnBasicSphere.position.z = z;
+		spnCreateScene.add(spnBasicSphere);
+	}
+
+	if (material == 'lambert') {
+		var spnLambertSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshLambertMaterial({color: clr, wireframe: wirefrm}));
+		spnLambertSphere.position.x = x;
+		spnLambertSphere.position.y = y;
+		spnLambertSphere.position.z = z;
+		spnCreateScene.add(spnLambertSphere);
+	}
+
+	if (material == 'phong') {
+		var spnPhongSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshPhongMaterial({color: clr, wireframe: wirefrm}));
+		spnPhongSphere.position.x = x;
+		spnPhongSphere.position.y = y;
+		spnPhongSphere.position.z = z;
+		spnCreateScene.add(spnPhongSphere);
 	}
 }
 
