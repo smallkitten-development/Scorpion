@@ -1,6 +1,6 @@
 // Scorpion game engine! Made by nathan.
 
-console.log("%cscorpion-engine version 1-1 beta", "text-shadow: 3px 2px red; font-size: 15px;");
+console.log("%cscorpion-engine version 1-2 beta", "text-shadow: 3px 2px red; font-size: 15px;");
 console.log("%cmade \n %c by \n %c smallKitten development", "line-height: 0.8;", "line-height: 1.5;", "line-height: 1;")
 
 var stats = new Stats();
@@ -43,19 +43,45 @@ var point = "point";
 var animateBaiscCubeObject = false;
 var animateLambertCubeObject = false;
 var animatePhongCubeObject = false;
+var animateDirectionalLightObject = false;
+var animatePointLightObject = false;
 
 var basicCubeAnimationX;
 var basicCubeAnimationY;
+var basicCubePositionAnimationX;
+var basicCubePositionAnimationY;
+var basicCubePositionAnimationZ;
+
 var lambertCubeAnimationX;
 var lambertCubeAnimationY;
+var lambertCubePositionAnimationX;
+var lambertCubePositionAnimationY;
+var lambertCubePositionAnimationZ;
+
 var phongCubeAnimationX;
 var phongCubeAnimationY;
+var phongCubePositionAnimationX;
+var phongCubePositionAnimationY;
+var phongCubePositionAnimationZ;
+
+var directionalLightAnimationX;
+var directionalLightAnimationY;
+var directionalLightPositionAnimationX
+var directionalLightPositionAnimationY;
+var directionalLightPositionAnimationZ;
+
+var pointLightAnimationX;
+var pointLightAnimationY;
+var pointLightPositionAnimationX
+var pointLightPositionAnimationY;
+var pointLightPositionAnimationZ;
 
 // global objects
 
 var spnBasicCubeGlobal;
 var spnLambertCubeGlobal;
 var spnPhongCubeGlobal;
+var spnDirectionalLightGlobal;
 
 window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
@@ -78,11 +104,16 @@ window.addEventListener('resize', resizeScene, false); // event lister for resiz
 
 function exampleScene() { // this renders a cube and a light
 	spnScene(true, true, 80, 0, 0, 0, 0xba55d3);
-	spnCube(phong, 0xba55d3, 5, 5, 5, 0, 0, -10, false);
-	spnLight(point, white, 0, 0, -2.5, 1, true);
-	spnAnimate('spnPhongCube', 0.025, 0.025);
+	//spnCube(phong, 0xba55d3, 5, 5, 5, 0, 0, -10, true);
+	spnSphere(lambert, 3, 24, 24, white, 0, 0, -10, false);
+	spnLight(point, white, 0, 0, 1, 1, true);
+	// spnAnimate('spnPhongCube', 0.025, 0.025, 0, 0, 0);
 	spnControl(true, keyboard, 0.1, 0.01);
-	spnFloor(lambert, 15, 15, 0, -5, -10, 15, white, false);
+	spnFloor(phong, 15, 15, 0, -5, -10, 42, white, true);
+	spnWall(phong, 15, 15, 0, 2.5, -17.5, 0, 0, 42, white, true);
+	spnWall(phong, 15, 15, -7.5, 2.5, -10, 0, Math.PI / 2, 42, white, true);
+	spnWall(phong, 15, 15, 7.5, 2.5, -10, 0, -Math.PI / 2, 42, white, true);
+	spnFloor(phong, 15, 15, 0, 10, -10, 42, white, true);
 
 	console.log('example scene has been created');
 }
@@ -154,27 +185,61 @@ function animate() {
 	if (animateBaiscCubeObject == true) {
 		spnBasicCubeGlobal.rotation.x += basicCubeAnimationX;
 		spnBasicCubeGlobal.rotation.y += basicCubeAnimationY;
+
+		spnBasicCubeGlobal.position.x += basicCubePositionAnimationX;
+		spnBasicCubeGlobal.position.y += basicCubePositionAnimationY;
+		spnBasicCubeGlobal.position.z += basicCubePositionAnimationZ;
 	}
 
 	if (animateLambertCubeObject == true) {
 		spnLambertCubeGlobal.rotation.x += lambertCubeAnimationX;
 		spnLambertCubeGlobal.rotation.y += lambertCubeAnimationY;
+
+		spnLambertCubeGlobal.position.x += lambertCubePositionAnimationX;
+		spnLambertCubeGlobal.position.y += lambertCubePositionAnimationY;
+		spnLambertCubeGlobal.position.z += lambertCubePositionAnimationZ;
 	}
 
 	if (animatePhongCubeObject == true) {
 		spnPhongCubeGlobal.rotation.x += phongCubeAnimationX;
 		spnPhongCubeGlobal.rotation.y += phongCubeAnimationY;
+
+		spnPhongCubeGlobal.position.x += phongCubePositionAnimationX;
+		spnPhongCubeGlobal.position.y += phongCubePositionAnimationY;
+		spnPhongCubeGlobal.position.z += phongCubePositionAnimationZ;
+	}
+
+	if (animateDirectionalLightObject == true) {
+		spnDirectionalLightGlobal.rotation.x += directionalLightAnimationX;
+		spnDirectionalLightGlobal.rotation.y += directionalLightAnimationY;
+
+		spnDirectionalLightGlobal.position.x += directionalLightPositionAnimationX;
+		spnDirectionalLightGlobal.position.y += directionalLightPositionAnimationY;
+		spnDirectionalLightGlobal.position.z += spnDirectionalLightPositionAnimationZ;
+	}
+
+	if (animatePointLightObject == true) {
+		spnPointLightGlobal.rotation.x += pointLightAnimationX;
+		spnPointLightGlobal.rotation.y += pointLightAnimationY;
+
+		spnPointLightGlobal.position.x += pointLightPositionAnimationX;
+		spnPointLightGlobal.position.y += pointLightPositionAnimationY;
+		spnPointLightGlobal.position.z += pointLightPositionAnimationZ;
 	}
 
 	stats.end(); // end fps monitor per frame
 }
 
-function spnAnimate(object, x, y) { // adds animation to created objects
+function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) { // adds animation to created objects
 	if (object == 'spnBasicCube') {
 		animateBaiscCubeObject = true;
 
-		basicCubeAnimationX = x;
-		basicCubeAnimationY = y;
+		basicCubeAnimationX = xRotate;
+		basicCubeAnimationY = yRotate;
+
+		basicCubePositionAnimationX = xPosition;
+		basicCubePositionAnimationY = yPosition;
+		basicCubePositionAnimationZ = zPosition;
 
 		console.log('animation added to ' + object + ' with an X axis rotation of ' + basicCubeAnimationX + ' and a Y axis rotation of ' + basicCubeAnimationY + ' per frame.');
 	}
@@ -182,8 +247,12 @@ function spnAnimate(object, x, y) { // adds animation to created objects
 	if (object == 'spnLambertCube') {
 		animateLambertCubeObject = true;
 
-		lambertCubeAnimationX = x;
-		lambertCubeAnimationY = y;
+		lambertCubeAnimationX = xRotate;
+		lambertCubeAnimationY = yRotate;
+
+		lambertCubePositionAnimationX = xPosition;
+		lambertCubePositionAnimationY = yPosition;
+		lambertCubePositionAnimationZ = zPosition;
 
 		console.log('animation added to ' + object + ' with an X axis rotation of ' + lambertCubeAnimationX + ' and a Y axis rotation of ' + lambertCubeAnimationY + ' per frame.');
 	}
@@ -191,10 +260,36 @@ function spnAnimate(object, x, y) { // adds animation to created objects
 	if (object == 'spnPhongCube') {
 		animatePhongCubeObject = true;
 
-		phongCubeAnimationX = x;
-		phongCubeAnimationY = y;
+		phongCubeAnimationX = xRotate;
+		phongCubeAnimationY = yRotate;
+
+		phongCubePositionAnimationX = xPosition;
+		phongCubePositionAnimationY = yPosition;
+		phongCubePositionAnimationZ = zPosition;
 
 		console.log('animation added to ' + object + ' with an X axis rotation of ' + phongCubeAnimationX + ' and a Y axis rotation of ' + phongCubeAnimationY + ' per frame.');
+	}
+
+	if (object == 'spnDirectionalLight') {
+		animateDirectionalLightObject = true;
+
+		directionalLightAnimationX = xRotate;
+		directionalLightAnimationY = yRotate;
+
+		directionalLightPositionAnimationX = xPosition;
+		directionalLightPositionAnimationY = yPosition;
+		directionalLightPositionAnimationZ = zPosition;
+	}
+
+	if (object == 'spnPointLight') {
+		animatePointLightObject = true;
+
+		pointLightAnimationX = xRotate;
+		pointLightAnimationY = yRotate;
+
+		pointLightPositionAnimationX = xPosition;
+		pointLightPositionAnimationY = yPosition;
+		pointLightPositionAnimationZ = zPosition;
 	}
 }
 
@@ -248,7 +343,6 @@ function spnLight(type, color, x, y, z, intensity, shadow) {
 		console.log('%cscorpion has created an abient light object sucessfully.', 'background: green; color: white; display: block;');
 
 		console.log(spnAmbientLight);
-		spnAmbientLightGlobal = spnAmbientLight; // these are made into global variables so they can be changed via animate();
 	} else if (type == directional) {
 		var spnDirectionalLight = new THREE.DirectionalLight(color, intensity);
 		spnDirectionalLight.position.set(x, y, z);
@@ -319,6 +413,32 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a cube 
 	}
 }
 
+function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z, wirefrm) {
+	if (material == 'basic') {
+		var spnBasicSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshBasicMaterial({color: clr, wireframe: wirefrm}));
+		spnBasicSphere.position.x = x;
+		spnBasicSphere.position.y = y;
+		spnBasicSphere.position.z = z;
+		spnCreateScene.add(spnBasicSphere);
+	}
+
+	if (material == 'lambert') {
+		var spnLambertSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshLambertMaterial({color: clr, wireframe: wirefrm}));
+		spnLambertSphere.position.x = x;
+		spnLambertSphere.position.y = y;
+		spnLambertSphere.position.z = z;
+		spnCreateScene.add(spnLambertSphere);
+	}
+
+	if (material == 'phong') {
+		var spnPhongSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshPhongMaterial({color: clr, wireframe: wirefrm}));
+		spnPhongSphere.position.x = x;
+		spnPhongSphere.position.y = y;
+		spnPhongSphere.position.z = z;
+		spnCreateScene.add(spnPhongSphere);
+	}
+}
+
 function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 	if (triangles > 100) {
 		console.warn('the floor triangles is very high. you may want to lower this number to increase performance.');
@@ -333,10 +453,12 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 
 		spnBasicPlane.material.side = THREE.DoubleSide;
 
-		spnBasicPlane.rotation.x = 90;
+		spnBasicPlane.rotation.x = -Math.PI / 2;
 
 		console.log(spnBasicPlane);
 		spnCreateScene.add(spnBasicPlane);
+
+		console.log('%cscorpion has created a basic floor sucessfully.', 'background: green; color: white; display: block;');
 	}
 
 	if (material == "lambert") {
@@ -349,9 +471,91 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 		spnLambertPlane.material.side = THREE.DoubleSide;
 		spnLambertPlane.receiveShadow = true;
 
-		spnLambertPlane.rotation.x = 90;
+		spnLambertPlane.rotation.x = -Math.PI / 2;
 
 		console.log(spnLambertPlane);
 		spnCreateScene.add(spnLambertPlane);
+
+		console.log('%cscorpion has created a lambert floor sucessfully.', 'background: green; color: white; display: block;');
+	}
+
+	if (material == "phong") {
+		var spnPhongPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshPhongMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+
+		spnPhongPlane.position.x = x;
+		spnPhongPlane.position.y = y;
+		spnPhongPlane.position.z = z;
+
+		spnPhongPlane.material.side = THREE.DoubleSide;
+		spnPhongPlane.receiveShadow = true;
+
+		spnPhongPlane.rotation.x = -Math.PI / 2;
+
+		console.log(spnPhongPlane);
+		spnCreateScene.add(spnPhongPlane);
+
+		console.log('%cscorpion has created a phong floor sucessfully.', 'background: green; color: white; display: block;');
+	}
+}
+
+function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, clr, wirefrm) {
+	if (triangles > 100) {
+		console.warn('the wall triangles is very high. you may want to lower this number to increase performance.');
+	}
+
+	if (material == "basic") {
+		var spnBasicWallPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshBasicMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+
+		spnBasicWallPlane.position.x = x;
+		spnBasicWallPlane.position.y = y;
+		spnBasicWallPlane.position.z = z;
+
+		spnBasicWallPlane.material.side = THREE.DoubleSide;
+
+		spnBasicWallPlane.rotation.x = xRotate;
+		spnBasicWallPlane.rotation.y = yRotate;
+
+		console.log(spnBasicWallPlane);
+		spnCreateScene.add(spnBasicWallPlane);
+
+		console.log('%cscorpion has created a basic wall sucessfully.', 'background: green; color: white; display: block;');
+	}
+
+	if (material == "lambert") {
+		var spnLambertWallPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshLambertMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+
+		spnLambertWallPlane.position.x = x;
+		spnLambertWallPlane.position.y = y;
+		spnLambertWallPlane.position.z = z;
+
+		spnLambertWallPlane.material.side = THREE.DoubleSide;
+		spnLambertWallPlane.receiveShadow = true;
+
+		spnLambertWallPlane.rotation.x = xRotate;
+		spnLambertWallPlane.rotation.y = yRotate;
+
+		console.log(spnLambertWallPlane);
+		spnCreateScene.add(spnLambertWallPlane);
+
+		console.log('%cscorpion has created a lambert wall sucessfully.', 'background: green; color: white; display: block;');
+	}
+
+	if (material == "phong") {
+		var spnPhongWallPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshPhongMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+
+		spnPhongWallPlane.position.x = x;
+		spnPhongWallPlane.position.y = y;
+		spnPhongWallPlane.position.z = z;
+
+		spnPhongWallPlane.material.side = THREE.DoubleSide;
+		spnPhongWallPlane.receiveShadow = true;
+
+		spnPhongWallPlane.rotation.x = xRotate;
+		spnPhongWallPlane.rotation.y = yRotate;
+
+		console.log(spnPhongWallPlane);
+		spnCreateScene.add(spnPhongWallPlane);
+
+		console.log('%cscorpion has created a phong wall sucessfully.', 'background: green; color: white; display: block;');
 	}
 }
