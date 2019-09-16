@@ -103,17 +103,16 @@ function spnLoadThree(location) { // loads three.js into the current page
 window.addEventListener('resize', resizeScene, false); // event lister for resizing the scene
 
 function exampleScene() { // this renders a cube and a light
-	spnScene(true, true, 80, 0, 0, 0, 0xba55d3);
-	//spnCube(phong, 0xba55d3, 5, 5, 5, 0, 0, -10, true);
-	spnSphere(lambert, 3, 24, 24, white, 0, 0, -10, false);
+	spnScene(true, true, 80, 0, 0, 0, black);
+	spnCube(phong, 0xba55d3, 5, 5, 5, 0, 0, -10, false);
 	spnLight(point, white, 0, 0, 1, 1, true);
-	// spnAnimate('spnPhongCube', 0.025, 0.025, 0, 0, 0);
+	spnAnimate('spnPhongCube', 0.025, 0.025, 0, 0, 0);
 	spnControl(true, keyboard, 0.1, 0.01);
-	spnFloor(phong, 15, 15, 0, -5, -10, 42, white, true);
-	spnWall(phong, 15, 15, 0, 2.5, -17.5, 0, 0, 42, white, true);
-	spnWall(phong, 15, 15, -7.5, 2.5, -10, 0, Math.PI / 2, 42, white, true);
-	spnWall(phong, 15, 15, 7.5, 2.5, -10, 0, -Math.PI / 2, 42, white, true);
-	spnFloor(phong, 15, 15, 0, 10, -10, 42, white, true);
+	spnFloor(lambert, 15, 15, 0, -5, -10, 42, white, false);
+	spnWall(lambert, 15, 15, 0, 2.5, -17.5, 0, 0, 42, white, false);
+	spnWall(lambert, 15, 15, -7.5, 2.5, -10, 0, Math.PI / 2, 42, white, false);
+	spnWall(lambert, 15, 15, 7.5, 2.5, -10, 0, -Math.PI / 2, 42, white, false);
+	spnFloor(lambert, 15, 15, 0, 10, -10, 42, white, false);
 
 	console.log('example scene has been created');
 }
@@ -303,7 +302,8 @@ function spnScene(alias, dyn, fov, x, y, z, backgroundColor) {
 	}
 
 	spnRenderer = new THREE.WebGLRenderer({
-		antialias: alias
+		antialias: alias,
+		shadowMap: true
 	});
     spnRenderer.setSize(WIDTH, HEIGHT);
     document.body.appendChild(spnRenderer.domElement);
@@ -347,6 +347,7 @@ function spnLight(type, color, x, y, z, intensity, shadow) {
 		var spnDirectionalLight = new THREE.DirectionalLight(color, intensity);
 		spnDirectionalLight.position.set(x, y, z);
 		spnDirectionalLight.castShadow = shadow;
+
 		spnCreateScene.add(spnDirectionalLight);
 
 		console.log('%cscorpion has created an directional light object sucessfully.', 'background: green; color: white; display: block;');
@@ -357,6 +358,7 @@ function spnLight(type, color, x, y, z, intensity, shadow) {
 		var spnPointLight = new THREE.PointLight(color, intensity);
 		spnPointLight.position.set(x, y, z);
 		spnPointLight.castShadow = shadow;
+
 		spnCreateScene.add(spnPointLight);
 
 		console.log('%cscorpion has created an point light object sucessfully.', 'background: green; color: white; display: block;');
@@ -419,6 +421,9 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 		spnBasicSphere.position.x = x;
 		spnBasicSphere.position.y = y;
 		spnBasicSphere.position.z = z;
+
+		spnBasicSphere.castShadow = true;
+
 		spnCreateScene.add(spnBasicSphere);
 	}
 
@@ -427,6 +432,9 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 		spnLambertSphere.position.x = x;
 		spnLambertSphere.position.y = y;
 		spnLambertSphere.position.z = z;
+
+		spnLambertSphere.castShadow = true;
+
 		spnCreateScene.add(spnLambertSphere);
 	}
 
@@ -435,6 +443,9 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 		spnPhongSphere.position.x = x;
 		spnPhongSphere.position.y = y;
 		spnPhongSphere.position.z = z;
+
+		spnPhongSphere.castShadow = true;
+
 		spnCreateScene.add(spnPhongSphere);
 	}
 }
