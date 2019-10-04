@@ -22,7 +22,6 @@ function enableScorpionDebugging(isTrue) {
 	console.warn('scorpion console debugging has been set to ' + isTrue);
 }
 
-
 // colors so you dont have to memorize a million hex codes
 
 var white = 0xffffff;
@@ -56,11 +55,18 @@ var point = "point";
 var animateBaiscCubeObject = false;
 var animateLambertCubeObject = false;
 var animatePhongCubeObject = false;
+
+var animateBaiscSphereObject = false;
+var animateLambertSphereObject = false;
+var animatePhongSphereObject = false;
+
 var animateDirectionalLightObject = false;
 var animatePointLightObject = false;
+
 var animateBasicPlaneObject = false;
 var animateLambertPlaneObject = false;
 var animatePhongPlaneObject = false;
+
 var animateBasicWallPlaneObject = false;
 var animateLambertWallPlaneObject = false;
 var animatePhongWallPlaneObject = false
@@ -82,6 +88,12 @@ var phongCubeAnimationY;
 var phongCubePositionAnimationX;
 var phongCubePositionAnimationY;
 var phongCubePositionAnimationZ;
+
+var phongSphereAnimationX;
+var phongSphereAnimationY;
+var phongSpherePositionAnimationX;
+var phongSpherePositionAnimationY;
+var phongSpherePositionAnimationZ;
 
 var directionalLightAnimationX;
 var directionalLightAnimationY;
@@ -136,17 +148,88 @@ var phongWallPlanePositionAnimationZ;
 var spnBasicCubeGlobal;
 var spnLambertCubeGlobal;
 var spnPhongCubeGlobal;
+
 var spnBasicSphereGlobal;
 var spnLambertSphereGlobal;
 var spnPhongSphereGlobal;
+
 var spnBasicPlaneGlobal;
 var spnLambertPlaneGlobal;
 var spnPhongPlaneGlobal;
+
 var spnBasicWallPlaneGlobal;
 var spnLambertWallPlaneGlobal;
 var spnPhongWallPlaneGlobal;
+
 var spnDirectionalLightGlobal;
 var spnPointLightGlobal;
+
+// these are arrays for keeping track of objects
+
+var spnBasicCubeArray = [];
+var spnLambertCubeArray = [];
+var spnPhongCubeArray = [];
+
+var spnBasicSphereArray = [];
+var spnLambertSphereArray = [];
+var spnPhongSphereArray = [];
+
+var spnBasicPlaneArray = [];
+var spnLambertPlaneArray = [];
+var spnPhongPlaneArray = [];
+
+var spnBasicWallPlaneArray = [];
+var spnLambertWallPlaneArray = [];
+var spnPhongWallPlaneArray = [];
+
+var spnDirectionalLightArray = [];
+var spnPointLightArray = [];
+
+function spnSwapGlobalFromArray(object, ID) {
+	arrayObject = spnCreateScene.getObjectById(ID, true);
+
+	if (object == 'spnBasicCube') {
+		spnBasicCubeGlobal = arrayObject;
+	} else if (object == 'spnLambertCube') {
+		spnLambertCubeGlobal = arrayObject;
+	} else if (object == 'spnPhongCube') {
+		spnPhongCubeGlobal = arrayObject;
+	}
+
+	if (object == 'spnBasicSphere') {
+		spnBasicSphereGlobal == arrayObject;
+	} else if (object == 'spnLambertSphere') {
+		spnLambertSphereGlobal = arrayObject;
+	} else if (object == 'spnPhongSphere') {
+		spnPhongCubeGlobal = arrayObject;
+	}
+
+	if (object == 'spnBasicPlane') {
+		spnBasicPlaneGlobal = arrayObject;
+	} else if (object == 'spnLambertPlane') {
+		spnLambertSphereGlobal = arrayObject;
+	} else if (object == 'spnPhongPlane') {
+		spnPhongPlaneGlobal = arrayObject;
+	}
+
+	if (object == 'spnBasicWallPlane') {
+		spnBasicWallPlaneGlobal = arrayObject;
+	} else if (object == 'spnLambertWallPlane') {
+		spnLambertWallPlaneGlobal = arrayObject;
+	} else if (object == 'spnPhongWallPlane') {
+		spnPhongWallPlaneGlobal = arrayObject;
+	}
+
+	if (object == 'spnDirectionalLight') {
+		spnDirectionalLightGlobal = arrayObject;
+	} else if (object == 'spnPointLight') {
+		spnPointLightGlobal = arrayObject;
+	}
+
+	if (scorpionDebug == true) {
+		console.log('swapped the global ' + object + ' mesh with an object with the ID ' + ID);
+	}
+}
 
 window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
@@ -348,6 +431,33 @@ function animate() {
 		spnPhongWallPlaneGlobal.position.z += phongWallPlanePositionAnimationZ;
 	}
 
+	if (animateBasicSphereObject == true) {
+		spnBasicSphereGlobal.rotation.x += basicSphereAnimationX;
+		spnBasicSphereGlobal.rotation.y += basicSphereAnimationY;
+
+		spnBasicSphereGlobal.position.x += basicSpherePositionAnimationX;
+		spnBasicSphereGlobal.position.y += basicSpherePositionAnimationY;
+		spnBasicSphereGlobal.position.z += basicSpherePositionAnimationZ;
+	}
+
+	if (animateLambertSphereObject == true) {
+		spnLambertSphereGlobal.rotation.x += LambertSphereAnimationX;
+		spnLambertSphereGlobal.rotation.y += LambertSphereAnimationY;
+
+		spnLambertSphereGlobal.position.x += LambertSpherePositionAnimationX;
+		spnLambertSphereGlobal.position.y += LambertSpherePositionAnimationY;
+		spnLambertSphereGlobal.position.z += LambertSpherePositionAnimationZ;
+	}
+
+	if (animatePhongSphereObject == true) {
+		spnPhongSphereGlobal.rotation.x += PhongSphereAnimationX;
+		spnPhongSphereGlobal.rotation.y += PhongSphereAnimationY;
+
+		spnPhongSphereGlobal.position.x += PhongSpherePositionAnimationX;
+		spnPhongSphereGlobal.position.y += PhongSpherePositionAnimationY;
+		spnPhongSphereGlobal.position.z += PhongSpherePositionAnimationZ;
+	}
+
 	stats.end(); // end fps monitor per frame
 }
 
@@ -361,8 +471,6 @@ function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) {
 		basicCubePositionAnimationX = xPosition;
 		basicCubePositionAnimationY = yPosition;
 		basicCubePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 	}
 
 	if (object == 'spnLambertCube') {
@@ -374,8 +482,6 @@ function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) {
 		lambertCubePositionAnimationX = xPosition;
 		lambertCubePositionAnimationY = yPosition;
 		lambertCubePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 	}
 
 	if (object == 'spnPhongCube') {
@@ -387,8 +493,6 @@ function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) {
 		phongCubePositionAnimationX = xPosition;
 		phongCubePositionAnimationY = yPosition;
 		phongCubePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 	}
 
 	if (object == 'spnDirectionalLight') {
@@ -400,8 +504,6 @@ function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) {
 		directionalLightPositionAnimationX = xPosition;
 		directionalLightPositionAnimationY = yPosition;
 		directionalLightPositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 	}
 
 	if (object == 'spnPointLight') {
@@ -413,8 +515,6 @@ function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) {
 		pointLightPositionAnimationX = xPosition;
 		pointLightPositionAnimationY = yPosition;
 		pointLightPositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 	}
 
 	if (object == 'spnBasicPlane') {
@@ -426,8 +526,6 @@ function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) {
 		basicPlanePositionAnimationX = xPosition;
 		basicPlanePositionAnimationY = yPosition;
 		basicPlanePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 	}
 
 	if (object == 'spnLambertPlane') {
@@ -439,8 +537,6 @@ function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) {
 		lambertPlanePositionAnimationX = xPosition;
 		lambertPlanePositionAnimationY = yPosition;
 		lambertPlanePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 	}
 
 	if (object == 'spnPhongPlane') {
@@ -452,8 +548,6 @@ function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) {
 		phongPlanePositionAnimationX = xPosition;
 		phongPlanePositionAnimationY = yPosition;
 		phongPlanePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 	}
 
 	if (object == 'spnBasicWallPlane') {
@@ -465,8 +559,6 @@ function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) {
 		basicWallPlanePositionAnimationX = xPosition;
 		basicWallPlanePositionAnimationY = yPosition;
 		basicWallPlanePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 	}
 
 	if (object == 'spnLambertWallPlane') {
@@ -478,8 +570,6 @@ function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) {
 		lambertWallPlanePositionAnimationX = xPosition;
 		lambertWallPlanePositionAnimationY = yPosition;
 		lambertWallPlanePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 	}
 
 	if (object == 'spnPhongWallPlane') {
@@ -491,9 +581,42 @@ function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) {
 		phongWallPlanePositionAnimationX = xPosition;
 		phongWallPlanePositionAnimationY = yPosition;
 		phongWallPlanePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 	}
+
+	if (object == 'spnBasicSphere') {
+		animateBasicSphereObject = true;
+
+		basicSphereAnimationX = xRotate;
+		basicSphereAnimationY = yRotate;
+
+		basicSpherePositionAnimationX = xPosition;
+		basicSpherePositionAnimationY = yPosition;
+		basicSpherePositionAnimationZ = zPosition;
+	}
+
+	if (object == 'spnLambertSphere') {
+		animateLambertSphereObject = true;
+
+		lambertSphereAnimationX = xRotate;
+		lambertSphereAnimationY = yRotate;
+
+		lambertSpherePositionAnimationX = xPosition;
+		lambertSpherePositionAnimationY = yPosition;
+		lambertSpherePositionAnimationZ = zPosition;
+	}
+
+	if (object == 'spnPhongSphere') {
+		animatePhongSphereObject = true;
+
+		phongSphereAnimationX = xRotate;
+		phongSphereAnimationY = yRotate;
+
+		phongSpherePositionAnimationX = xPosition;
+		phongSpherePositionAnimationY = yPosition;
+		phongSpherePositionAnimationZ = zPosition;
+	}
+
+	console.log('animation added to ' + object + ' with an X axis rotation of ' + xRotate + ' and a Y axis rotation of ' + yRotate + ' per frame.');
 }
 
 function spnScene(alias, dyn, fov, x, y, z, backgroundColor) {
@@ -558,6 +681,7 @@ function spnLight(type, color, x, y, z, intensity, shadow) {
 
 		console.log(spnDirectionalLight);
 		spnDirectionalLightGlobal = spnDirectionalLight;
+		spnDirectionalLightArray.post(spnDirectionalLight.id);
 	} else if (type == point) {
 		var spnPointLight = new THREE.PointLight(color, intensity);
 		spnPointLight.position.set(x, y, z);
@@ -569,6 +693,7 @@ function spnLight(type, color, x, y, z, intensity, shadow) {
 
 		console.log(spnPointLight);
 		spnPointLightGlobal = spnPointLight;
+		spnPointLightArray.post(spnPointLight.id);
 	}
 }
 
@@ -578,14 +703,14 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a cube 
 		spnBasicCube.position.x = x;
 		spnBasicCube.position.y = y;
 		spnBasicCube.position.z = z;
-		spnCreateScene.add(spnBasicCube);
-
 		spnBasicCube.castShadow = true;
+		spnCreateScene.add(spnBasicCube);
 
 		console.log('%cscorpion has created a basic cube object sucessfully.', 'background: green; color: white; display: block;');
 
 		console.log(spnBasicCube);
 		spnBasicCubeGlobal = spnBasicCube;
+		spnBasicCubeArray.push(spnBasicCube.id); // adds the cube to an array
 	}
 
 	if (material == "lambert") {
@@ -593,14 +718,14 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a cube 
 		spnLambertCube.position.x = x;
 		spnLambertCube.position.y = y;
 		spnLambertCube.position.z = z;
-		spnCreateScene.add(spnLambertCube);
-
 		spnLambertCube.castShadow = true;
+		spnCreateScene.add(spnLambertCube);
 
 		console.log('%cscorpion has created a lambert cube object sucessfully.', 'background: green; color: white; display: block;');
 
 		console.log(spnLambertCube);
 		spnLambertCubeGlobal = spnLambertCube;
+		spnLambertCubeArray.push(spnLambertCube.id);
 	}
 
 	if (material == "phong") {
@@ -608,14 +733,14 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a cube 
 		spnPhongCube.position.x = x;
 		spnPhongCube.position.y = y;
 		spnPhongCube.position.z = z;
-		spnCreateScene.add(spnPhongCube);
-
 		spnPhongCube.castShadow = true;
+		spnCreateScene.add(spnPhongCube);
 
 		console.log('%cscorpion has created a phong cube object sucessfully.', 'background: green; color: white; display: block;');
 
 		console.log(spnPhongCube);
 		spnPhongCubeGlobal = spnPhongCube;
+		spnPhongCubeArray.push(spnPhongCube.id);
 	}
 }
 
@@ -642,6 +767,7 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 
 		spnCreateScene.add(spnLambertSphere);
 		spnLambertSphereGlobal = spnLambertSphere;
+		spnLambertSphereArray.post(spnLambertSphere.id);
 	}
 
 	if (material == 'phong') {
@@ -654,6 +780,7 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 
 		spnCreateScene.add(spnPhongSphere);
 		spnPhongSphereGlobal = spnPhongSphere;
+		spnPhongSphereArray.post(spnPhongSphere.id);
 	}
 }
 
@@ -677,6 +804,7 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 		spnCreateScene.add(spnBasicPlane);
 
 		spnBasicPlaneGlobal = spnBasicPlane;
+		spnBasicPlaneArray.post(spnBasicPlane.id);
 
 		console.log('%cscorpion has created a basic floor sucessfully.', 'background: green; color: white; display: block;');
 	}
@@ -697,6 +825,7 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 		spnCreateScene.add(spnLambertPlane);
 
 		spnLambertPlaneGlobal = spnLambertPlane;
+		spnLambertPlaneArray.post(spnLambertPlane.id);
 
 		console.log('%cscorpion has created a lambert floor sucessfully.', 'background: green; color: white; display: block;');
 	}
@@ -717,6 +846,7 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 		spnCreateScene.add(spnPhongPlane);
 
 		spnPhongPlaneGlobal = spnPhongPlaneGlobal;
+		spnPhongPlaneArray.post(spnPhongPlane.id);
 
 		console.log('%cscorpion has created a phong floor sucessfully.', 'background: green; color: white; display: block;');
 	}
@@ -743,6 +873,7 @@ function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, 
 		spnCreateScene.add(spnBasicWallPlane);
 
 		spnBasicWallPlaneGlobal = spnBasicWallPlane;
+		spnBasicWallPlaneArray.post(spnBasicWallPlane.id);
 
 		console.log('%cscorpion has created a basic wall sucessfully.', 'background: green; color: white; display: block;');
 	}
@@ -764,6 +895,7 @@ function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, 
 		spnCreateScene.add(spnLambertWallPlane);
 
 		spnLambertWallPlaneGlobal = spnLambertWallPlane;
+		spnLambertWallPlaneArray.post(spnLambertWallPlane.id);
 
 		console.log('%cscorpion has created a lambert wall sucessfully.', 'background: green; color: white; display: block;');
 	}
@@ -785,6 +917,7 @@ function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, 
 		spnCreateScene.add(spnPhongWallPlane);
 
 		spnPhongWallPlaneGlobal = spnPhongWallPlane;
+		spnLambertWallPlaneArray.post(spnLambertWallPlane.id);
 
 		console.log('%cscorpion has created a phong wall sucessfully.', 'background: green; color: white; display: block;');
 	}
