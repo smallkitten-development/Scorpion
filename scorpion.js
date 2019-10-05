@@ -1,6 +1,6 @@
 // Scorpion game engine! Made by nathan.
 
-console.log("%cscorpion-engine version 1-2 beta", "text-shadow: 3px 2px red; font-size: 15px;");
+console.log("%cscorpion-engine version 1-3 beta", "text-shadow: 3px 2px red; font-size: 15px;");
 console.log("%cmade \n %c by \n %c smallKitten development", "line-height: 0.8;", "line-height: 1.5;", "line-height: 1;")
 
 var stats = new Stats();
@@ -56,7 +56,7 @@ var animateBaiscCubeObject = false;
 var animateLambertCubeObject = false;
 var animatePhongCubeObject = false;
 
-var animateBaiscSphereObject = false;
+var animateBasicSphereObject = false;
 var animateLambertSphereObject = false;
 var animatePhongSphereObject = false;
 
@@ -681,7 +681,7 @@ function spnLight(type, color, x, y, z, intensity, shadow) {
 
 		console.log(spnDirectionalLight);
 		spnDirectionalLightGlobal = spnDirectionalLight;
-		spnDirectionalLightArray.post(spnDirectionalLight.id);
+		spnDirectionalLightArray.push(spnDirectionalLight.id);
 	} else if (type == point) {
 		var spnPointLight = new THREE.PointLight(color, intensity);
 		spnPointLight.position.set(x, y, z);
@@ -693,7 +693,7 @@ function spnLight(type, color, x, y, z, intensity, shadow) {
 
 		console.log(spnPointLight);
 		spnPointLightGlobal = spnPointLight;
-		spnPointLightArray.post(spnPointLight.id);
+		spnPointLightArray.push(spnPointLight.id);
 	}
 }
 
@@ -767,7 +767,7 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 
 		spnCreateScene.add(spnLambertSphere);
 		spnLambertSphereGlobal = spnLambertSphere;
-		spnLambertSphereArray.post(spnLambertSphere.id);
+		spnLambertSphereArray.push(spnLambertSphere.id);
 	}
 
 	if (material == 'phong') {
@@ -780,7 +780,7 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 
 		spnCreateScene.add(spnPhongSphere);
 		spnPhongSphereGlobal = spnPhongSphere;
-		spnPhongSphereArray.post(spnPhongSphere.id);
+		spnPhongSphereArray.push(spnPhongSphere.id);
 	}
 }
 
@@ -804,7 +804,7 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 		spnCreateScene.add(spnBasicPlane);
 
 		spnBasicPlaneGlobal = spnBasicPlane;
-		spnBasicPlaneArray.post(spnBasicPlane.id);
+		spnBasicPlaneArray.push(spnBasicPlane.id);
 
 		console.log('%cscorpion has created a basic floor sucessfully.', 'background: green; color: white; display: block;');
 	}
@@ -825,7 +825,7 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 		spnCreateScene.add(spnLambertPlane);
 
 		spnLambertPlaneGlobal = spnLambertPlane;
-		spnLambertPlaneArray.post(spnLambertPlane.id);
+		spnLambertPlaneArray.push(spnLambertPlane.id);
 
 		console.log('%cscorpion has created a lambert floor sucessfully.', 'background: green; color: white; display: block;');
 	}
@@ -846,7 +846,7 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
 		spnCreateScene.add(spnPhongPlane);
 
 		spnPhongPlaneGlobal = spnPhongPlaneGlobal;
-		spnPhongPlaneArray.post(spnPhongPlane.id);
+		spnPhongPlaneArray.push(spnPhongPlane.id);
 
 		console.log('%cscorpion has created a phong floor sucessfully.', 'background: green; color: white; display: block;');
 	}
@@ -873,7 +873,7 @@ function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, 
 		spnCreateScene.add(spnBasicWallPlane);
 
 		spnBasicWallPlaneGlobal = spnBasicWallPlane;
-		spnBasicWallPlaneArray.post(spnBasicWallPlane.id);
+		spnBasicWallPlaneArray.push(spnBasicWallPlane.id);
 
 		console.log('%cscorpion has created a basic wall sucessfully.', 'background: green; color: white; display: block;');
 	}
@@ -895,7 +895,7 @@ function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, 
 		spnCreateScene.add(spnLambertWallPlane);
 
 		spnLambertWallPlaneGlobal = spnLambertWallPlane;
-		spnLambertWallPlaneArray.post(spnLambertWallPlane.id);
+		spnLambertWallPlaneArray.push(spnLambertWallPlane.id);
 
 		console.log('%cscorpion has created a lambert wall sucessfully.', 'background: green; color: white; display: block;');
 	}
@@ -917,7 +917,7 @@ function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, 
 		spnCreateScene.add(spnPhongWallPlane);
 
 		spnPhongWallPlaneGlobal = spnPhongWallPlane;
-		spnLambertWallPlaneArray.post(spnLambertWallPlane.id);
+		spnLambertWallPlaneArray.push(spnLambertWallPlane.id);
 
 		console.log('%cscorpion has created a phong wall sucessfully.', 'background: green; color: white; display: block;');
 	}
