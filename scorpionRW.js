@@ -151,11 +151,47 @@ function spnCustomMaterial(material, albedo, normal, specular, emissive, materia
 }
 
 // ---------------------------------------------------------
+// LIGHTS:
+
+function spnLight(type, color, x, y, z, intensity, shadow, lightName) {
+	if (type == 'ambient') {
+		// CREATE AMBIENT LIGHT:
+
+		var spnAmbientLight = new THREE.AmbientLight(color);
+		spnScene.add(spnAmbientLight);
+
+		this[globalObject + lightName] = spnAmbientLight;
+	}
+
+	if (type == 'directional') {
+		// CREATE DIRECTIONAL LIGHT:
+
+		var spnDirectionalLight = new THREE.DirectionalLight(color, intensity);
+		spnDirectionalLight.position.set(x, y, z);
+		spnDirectionalLight.castShadow = shadow;
+		spnScene.add(spnAmbientLight);
+
+		this[globalObject + lightName] = spnAmbientLight;
+	}
+
+	if (type == 'point') {
+		// CREATE POINT LIGHT:
+
+		var spnPointLight = new THREE.PointLight(color, intensity);
+		spnPointLight.position.set(x, y, z);
+		spnPointLight.castShadow = shadow;
+		spnScene.add(spnPointLight);
+
+		this[globalObject + lightName] = spnAmbientLight;
+	}
+
+	log('_scorpion_ has created a ' + type + ' light.');
+}
+
+// ---------------------------------------------------------
 // CUBES:
 
 function spnCube(material, clr, l, w, depth, x, y, z, wirefrm, objectName) {
-	// BASIC CUBE:
-
 	if (material == 'basic') {
 		// CREATE BASIC CUBE MESH:
 
@@ -171,7 +207,79 @@ function spnCube(material, clr, l, w, depth, x, y, z, wirefrm, objectName) {
 		this[globalObject + objectName] = spnBasicCube;
 	}
 
+	if (material == 'lambert') {
+		// CREATE LAMBERT CUBE MESH:
+
+		var spnLambertCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshLambertMaterial({color: clr, wireframe: wirefrm}));
+		spnLambertCube.position.x = x;
+		spnLambertCube.position.y = y;
+		spnLambertCube.position.z = z;
+		spnLambertCube.castShadow = true;
+		spnScene.add(spnLambertCube);
+
+		this[globalObject + objectName] = spnLambertCube;
+	}
+
+	if (material == 'phong') {
+		// CREATE PHONG CUBE MESH:
+
+		var spnPhongCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshPhongMaterial({color: clr, wireframe: wirefrm}));
+		spnPhongCube.position.x = x;
+		spnPhongCube.position.y = y;
+		spnPhongCube.position.z = z;
+		spnPhongCube.castShadow = true;
+		spnScene.add(spnPhongCube);
+
+		this[globalObject + objectName] = spnPhongCube;
+	}
+
 	log('_scorpion_ has created a ' + material + ' cube.');
+}
+
+// ---------------------------------------------------------
+// SPHERES:
+
+function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z, wirefrm, objectName) {
+	// CREATE BASIC SPHERE MESH
+
+	if (material == 'basic') {
+		var spnBasicSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshBasicMaterial({color: clr, wireframe: wirefrm}));
+		spnBasicSphere.position.x = x;
+		spnBasicSphere.position.y = y;
+		spnBasicSphere.position.z = z;
+		spnBasicSphere.castShadow = true;
+		spnCreateScene.add(spnBasicSphere);
+
+		this[globalObject + objectName] = spnBasicSphere;
+	}
+
+	// CREATE LAMBERT SPHERE MESH
+
+	if (material == 'lambert') {
+		var spnLambertSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshLambertMaterial({color: clr, wireframe: wirefrm}));
+		spnLambertSphere.position.x = x;
+		spnLambertSphere.position.y = y;
+		spnLambertSphere.position.z = z;
+		spnLambertSphere.castShadow = true;
+		spnCreateScene.add(spnLambertSphere);
+
+		this[globalObject + objectName] = spnLambertSphere;
+	}
+
+	// CREATE PHONG SPHERE MESH
+
+	if (material == 'phong') {
+		var spnPhongSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshPhongMaterial({color: clr, wireframe: wirefrm}));
+		spnPhongSphere.position.x = x;
+		spnPhongSphere.position.y = y;
+		spnPhongSphere.position.z = z;
+		spnPhongSphere.castShadow = true;
+		spnCreateScene.add(spnPhongSphere);
+
+		this[globalObject + objectName] = spnPhongSphere;
+	}
+
+	log('_scorpion_ has created a ' + material + ' sphere.');
 }
 
 
