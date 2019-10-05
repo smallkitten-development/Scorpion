@@ -7,15 +7,6 @@ For example, this whole scene is creted using only **4 lines of code.** Using va
 
 For helpful information and documentation, make sure to check the wiki. You can also check out my twitter, @nathangwk.
 
-### Features/Uses:
-I created this engine as an easy way for newcomers to take advantage of Three.js. The Three.js library is a very rich and detailed library which I initially found overwhelming. I used this project as an excuse to jump head first into the world of Three.js and the world of 3D in the browser in general. I am still learning and implementing new things as I learn, any pointers would be much appriciated!
-
-Scorpion was designed for people like me who are used to programming with vanilla JavaScript and who haven't really gotten into a bunch of the big 3rd party libraries. When starting to learn Three.js, I found that even a lot of the simpler things I wanted to do, such as just creating a simple cube with a simple material, was very challenging since I had never dabbled in 3D before. Cameras, scenes, and meshes all seemed like a concept I understood, but I found that there was a lot of deeper concepts involved in creating each of these things with standard Three.js.
-
-Because of this, when I started to learn I set up my workflow in a way that made it easier for me to get simple tasks done using only a single line of code for each task I wanted to get done. If I wanted to make a scene, all I had to do was call one function with a bunch of variable parameters and Three.js handles the rest. This made it easy for me to just get what I wanted to get done with my vanilla JS experience while also taking advantage of a powerful library like three.js.
-
-There's still a lot of work to be done, and I'm not the best at Three.js still. But I'm learning with this project and I hope this project can help some people who feel the same way!
-
 ### Images:
 
 ![image1](https://cdn1.imggmi.com/uploads/2019/9/12/9df346ac14a51f5892f2f276cd841f7f-full.png)
