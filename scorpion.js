@@ -343,6 +343,7 @@ function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, 
 		spnLambertWallPlane.material.side = THREE.DoubleSide;
 		spnLambertWallPlane.rotation.x = xRotate;
 		spnLambertWallPlane.rotation.y = yRotate;
+		spnLambertWallPlane.receiveShadow = true;
 		spnScene.add(spnLambertWallPlane);
 
 		this[globalObject + objectName] = spnLambertWallPlane;
@@ -358,6 +359,7 @@ function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, 
 		spnPhongWallPlane.material.side = THREE.DoubleSide;
 		spnPhongWallPlane.rotation.x = xRotate;
 		spnPhongWallPlane.rotation.y = yRotate;
+		spnPhongWallPlane.receiveShadow = true;
 		spnScene.add(spnPhongWallPlane);
 
 		this[globalObject + objectName] = spnPhongWallPlane;
@@ -379,7 +381,7 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm, obj
 		spnBasicFloorPlane.position.z = z;
 		spnBasicFloorPlane.material.side = THREE.DoubleSide;
 		spnBasicFloorPlane.rotation.x = -Math.PI / 2;
-		spnCreateScene.add(spnBasicFloorPlane);
+		spnScene.add(spnBasicFloorPlane);
 
 		this[globalObject + objectName] = spnBasicFloorPlane;
 	}
@@ -393,7 +395,8 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm, obj
 		spnLambertFloorPlane.position.z = z;
 		spnLambertFloorPlane.material.side = THREE.DoubleSide;
 		spnLambertFloorPlane.rotation.x = -Math.PI / 2;
-		spnCreateScene.add(spnLambertFloorPlane);
+		spnLambertFloorPlane.receiveShadow = true;
+		spnScene.add(spnLambertFloorPlane);
 
 		this[globalObject + objectName] = spnLambertFloorPlane;
 	}
@@ -407,7 +410,8 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm, obj
 		spnPhongFloorPlane.position.z = z;
 		spnPhongFloorPlane.material.side = THREE.DoubleSide;
 		spnPhongFloorPlane.rotation.x = -Math.PI / 2;
-		spnCreateScene.add(spnPhongFloorPlane);
+		spnPhongFloorPlane.receiveShadow = true;
+		spnScene.add(spnPhongFloorPlane);
 
 		this[globalObject + objectName] = spnPhongFloorPlane;
 	}
