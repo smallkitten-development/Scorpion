@@ -48,6 +48,31 @@ function resizeRenderer() {
 }
 
 // ---------------------------------------------------------
+// ANIMATIONS:
+// these animations cannot be stopped, however they can be applied to multiple objects.
+// using scripts like these outside of scorpion works perfectly fine as long as you know the name of the object you want to apply it to
+
+function spnRotationAnimation(object, speed, x, y, z, animationName) { // for rotation animations, makes a global variable for animation name
+	this[globalObject + animationName] = window.setInterval(function(){
+  		object.rotation.x -= speed * x;
+		object.rotation.y -= speed * y;
+		object.rotation.z -= speed * z;
+	}, 16);
+
+	log('added a rotation animation called global' + animationName + ' to a global object.');
+}
+
+function spnPositionAnimation(object, speed, x, y, z, animationName) {
+	this[globalObject + animationName] = window.setInterval(function(){
+  		object.position.x -= speed * x;
+		object.position.y -= speed * y;
+		object.position.z -= speed * z;
+	}, 16);
+
+	log('added a positional animation called global' + animationName + ' to a global object.');
+}
+
+// ---------------------------------------------------------
 // COLORS:
 
 var white = 0xffffff;

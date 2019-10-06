@@ -10,14 +10,4 @@ spnCube('basic', white, 1, 1, 1, 0, 0, -2.5, true, 'BasicCube');
 
 // ANIMATION:
 
-var SPEED = 0.01;
-
-function rotateCube() {
-	globalBasicCube.rotation.x -= SPEED * 2;
-	globalBasicCube.rotation.y -= SPEED;
-	globalBasicCube.rotation.z -= SPEED * 3;
-}
-
-window.setInterval(function(){
-  rotateCube();
-}, 16);
+spnRotationAnimation(globalBasicCube, 0.01, 2, 0.01, 3, 'RotationAnimationDemo'); // a one liner for adding a rotation animation to an object!
