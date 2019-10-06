@@ -1,16 +1,82 @@
-// Scorpion game engine! Made by nathan.
+// Scorpion 3D engine built on three.js
+// rewritten 10/4/19
 
-console.log("%cscorpion-engine version 1-2 beta", "text-shadow: 3px 2px red; font-size: 15px;");
-console.log("%cmade \n %c by \n %c smallKitten development", "line-height: 0.8;", "line-height: 1.5;", "line-height: 1;")
+log('_scorpion engine_ v0.1 -- *made by smallkitten development*');
+log('rewritten from scratch on _10/4/19_');
 
-var stats = new Stats();
+var stats = new Stats(); // stats.js by mrdoob
 stats.showPanel(0);
 
-function spnStats() {
-	document.body.appendChild(stats.dom);
+function spnStats(bool) {
+	if (bool == true) {
+		document.body.appendChild(stats.dom);
+	}
 }
 
-// colors so you dont have to memorize a million hex codes
+// ---------------------------------------------------------
+// DEBUGGING:
+// using spnDebug() will cause some functions to give more verbose console output
+
+var scorpionDebug = false;
+
+function spnDebug(bool) {
+	scorpionDebug = bool;
+
+	log('_scorpion debugging_ is set to ' + bool);
+}
+
+//---------------------------------------------------------
+// GENERAL SETTINGS AND VARIABLES:
+
+var globalObject = 'global'; // for piggy packing dynamic global variables
+
+var windowWidth = window.innerWidth;
+var windowHeight = window.innerHeight;
+
+var textureLoader = new THREE.TextureLoader(); // set this here so the code in the material creator is easier to read
+
+var isDynamic = false; // is the renderer dynamic?
+
+window.addEventListener('resize', resizeRenderer, false); // resize renderer if the screen size changes
+
+function resizeRenderer() {
+	if (isDynamic == true) {
+		spnCamera.aspect = window.innerWidth / window.innerHeight;
+		spnCamera.updateProjectionMatrix();
+
+		spnRenderer.setSize(window.innerWidth, window.innerHeight);
+	}
+
+	// verbose debug logging could be added here
+}
+
+// ---------------------------------------------------------
+// ANIMATIONS:
+// these animations cannot be stopped, however they can be applied to multiple objects.
+// using scripts like these outside of scorpion works perfectly fine as long as you know the name of the object you want to apply it to
+
+function spnRotationAnimation(object, speed, x, y, z, animationName) { // for rotation animations, makes a global variable for animation name
+	this[globalObject + animationName] = window.setInterval(function(){
+  		object.rotation.x -= speed * x;
+		object.rotation.y -= speed * y;
+		object.rotation.z -= speed * z;
+	}, 16);
+
+	log('added a rotation animation called global' + animationName + ' to a global object.');
+}
+
+function spnPositionAnimation(object, speed, x, y, z, animationName) {
+	this[globalObject + animationName] = window.setInterval(function(){
+  		object.position.x -= speed * x;
+		object.position.y -= speed * y;
+		object.position.z -= speed * z;
+	}, 16);
+
+	log('added a positional animation called global' + animationName + ' to a global object.');
+}
+
+// ---------------------------------------------------------
+// COLORS:
 
 var white = 0xffffff;
 var black = 0x000000;
@@ -21,541 +87,332 @@ var green = 0x008000;
 var blue = 0x0000ff;
 var purple = 0x800080;
 
-var walkSpeed;
-var lookSpeed;
-
-var dynamic = false; // set to false by default unless stated otherwise by the scene creator.
-
-// object material types
-
-var basic = "basic";
-var lambert = "lambert";
-var phong = "phong";
-
-// lighting types
-
-var ambient = "ambient";
-var directional = "directional";
-var point = "point";
-
-// animation variables
-
-var animateBaiscCubeObject = false;
-var animateLambertCubeObject = false;
-var animatePhongCubeObject = false;
-var animateDirectionalLightObject = false;
-var animatePointLightObject = false;
-
-var basicCubeAnimationX;
-var basicCubeAnimationY;
-var basicCubePositionAnimationX;
-var basicCubePositionAnimationY;
-var basicCubePositionAnimationZ;
-
-var lambertCubeAnimationX;
-var lambertCubeAnimationY;
-var lambertCubePositionAnimationX;
-var lambertCubePositionAnimationY;
-var lambertCubePositionAnimationZ;
-
-var phongCubeAnimationX;
-var phongCubeAnimationY;
-var phongCubePositionAnimationX;
-var phongCubePositionAnimationY;
-var phongCubePositionAnimationZ;
-
-var directionalLightAnimationX;
-var directionalLightAnimationY;
-var directionalLightPositionAnimationX
-var directionalLightPositionAnimationY;
-var directionalLightPositionAnimationZ;
-
-var pointLightAnimationX;
-var pointLightAnimationY;
-var pointLightPositionAnimationX
-var pointLightPositionAnimationY;
-var pointLightPositionAnimationZ;
-
-// global objects
-
-var spnBasicCubeGlobal;
-var spnLambertCubeGlobal;
-var spnPhongCubeGlobal;
-var spnDirectionalLightGlobal;
-
-window.addEventListener('keydown', keyDown);
-window.addEventListener('keyup', keyUp);
-
-var cameraControl = false;
-var controlKeyboard = false;
-
-var keyboard = 'keyboard';
-var keyboardKey = {};
-
-function spnLoadThree(location) { // loads three.js into the current page
-	three = document.createElement("script");
-	three.src = location;
-	document.head.appendChild(three);
-}
-
-// ^^ loads three too late
-
-window.addEventListener('resize', resizeScene, false); // event lister for resizing the scene
-
-function exampleScene() { // this renders a cube and a light
-	spnScene(true, true, 80, 0, 0, 0, 0xba55d3);
-	//spnCube(phong, 0xba55d3, 5, 5, 5, 0, 0, -10, true);
-	spnSphere(lambert, 3, 24, 24, white, 0, 0, -10, false);
-	spnLight(point, white, 0, 0, 1, 1, true);
-	// spnAnimate('spnPhongCube', 0.025, 0.025, 0, 0, 0);
-	spnControl(true, keyboard, 0.1, 0.01);
-	spnFloor(phong, 15, 15, 0, -5, -10, 42, white, true);
-	spnWall(phong, 15, 15, 0, 2.5, -17.5, 0, 0, 42, white, true);
-	spnWall(phong, 15, 15, -7.5, 2.5, -10, 0, Math.PI / 2, 42, white, true);
-	spnWall(phong, 15, 15, 7.5, 2.5, -10, 0, -Math.PI / 2, 42, white, true);
-	spnFloor(phong, 15, 15, 0, 10, -10, 42, white, true);
-
-	console.log('example scene has been created');
-}
-
-function spnControl(enabled, type, wlkSpeed, lkSpeed) {
-	if (enabled == true) {
-		cameraControl = true;
-
-		walkSpeed = wlkSpeed;
-		lookSpeed = lkSpeed;
-	}
-
-	if (type == keyboard) {
-		controlKeyboard = true;
-	}
-}
-
-function keyDown(event) { // keyboard keyup/down controls
-	keyboardKey[event.keyCode] = true;
-	// console.log(keyboardKey);
-}
-
-function keyUp(event) {
-	keyboardKey[event.keyCode] = false;
-}
+// ^ these are variables that makes coloring things easier so you don't have to google hex codes
+// ---------------------------------------------------------
+// ANIMATION FRAME LOOP:
+// this is the loop that is called to render the scene and camera
 
 function animate() {
-	stats.begin(); // start fps monitor
-	
+	stats.begin(); // call the fps monitor here
+
 	requestAnimationFrame(animate);
-	spnRenderer.render(spnCreateScene, spnCamera); // render camera and scene
+	spnRenderer.render(spnScene, spnCamera);
 
-	if (cameraControl == true && controlKeyboard == true) {
-		if (keyboardKey[37]) { // left
-			spnCamera.rotation.y += Math.PI * lookSpeed;
-		}
-
-		if (keyboardKey[39]) { // right
-			spnCamera.rotation.y -= Math.PI * lookSpeed;
-		}
-
-		if (keyboardKey[38]) { // up
-			spnCamera.rotation.x += Math.PI * lookSpeed;
-		}
-
-		if (keyboardKey[40]) { // down
-			spnCamera.rotation.x -= Math.PI * lookSpeed;
-		}
-
-		if (keyboardKey[83]) { // backward
-			spnCamera.position.z += Math.PI * walkSpeed;
-		}
-
-		if (keyboardKey[87]) { // forward
-			spnCamera.position.z -= Math.PI * walkSpeed;
-		}
-
-		if (keyboardKey[65]) { // left
-			spnCamera.position.x -= Math.PI * walkSpeed;
-		}
-
-		if (keyboardKey[68]) { // right
-			spnCamera.position.x += Math.PI * walkSpeed;
-		}
-	}
-
-	// ^^ movement controls for the camera enabled by spnControl();
-
-	if (animateBaiscCubeObject == true) {
-		spnBasicCubeGlobal.rotation.x += basicCubeAnimationX;
-		spnBasicCubeGlobal.rotation.y += basicCubeAnimationY;
-
-		spnBasicCubeGlobal.position.x += basicCubePositionAnimationX;
-		spnBasicCubeGlobal.position.y += basicCubePositionAnimationY;
-		spnBasicCubeGlobal.position.z += basicCubePositionAnimationZ;
-	}
-
-	if (animateLambertCubeObject == true) {
-		spnLambertCubeGlobal.rotation.x += lambertCubeAnimationX;
-		spnLambertCubeGlobal.rotation.y += lambertCubeAnimationY;
-
-		spnLambertCubeGlobal.position.x += lambertCubePositionAnimationX;
-		spnLambertCubeGlobal.position.y += lambertCubePositionAnimationY;
-		spnLambertCubeGlobal.position.z += lambertCubePositionAnimationZ;
-	}
-
-	if (animatePhongCubeObject == true) {
-		spnPhongCubeGlobal.rotation.x += phongCubeAnimationX;
-		spnPhongCubeGlobal.rotation.y += phongCubeAnimationY;
-
-		spnPhongCubeGlobal.position.x += phongCubePositionAnimationX;
-		spnPhongCubeGlobal.position.y += phongCubePositionAnimationY;
-		spnPhongCubeGlobal.position.z += phongCubePositionAnimationZ;
-	}
-
-	if (animateDirectionalLightObject == true) {
-		spnDirectionalLightGlobal.rotation.x += directionalLightAnimationX;
-		spnDirectionalLightGlobal.rotation.y += directionalLightAnimationY;
-
-		spnDirectionalLightGlobal.position.x += directionalLightPositionAnimationX;
-		spnDirectionalLightGlobal.position.y += directionalLightPositionAnimationY;
-		spnDirectionalLightGlobal.position.z += spnDirectionalLightPositionAnimationZ;
-	}
-
-	if (animatePointLightObject == true) {
-		spnPointLightGlobal.rotation.x += pointLightAnimationX;
-		spnPointLightGlobal.rotation.y += pointLightAnimationY;
-
-		spnPointLightGlobal.position.x += pointLightPositionAnimationX;
-		spnPointLightGlobal.position.y += pointLightPositionAnimationY;
-		spnPointLightGlobal.position.z += pointLightPositionAnimationZ;
-	}
-
-	stats.end(); // end fps monitor per frame
+	stats.end(); // end stats call here
 }
 
-function spnAnimate(object, xRotate, yRotate, xPosition, yPosition, zPosition) { // adds animation to created objects
-	if (object == 'spnBasicCube') {
-		animateBaiscCubeObject = true;
-
-		basicCubeAnimationX = xRotate;
-		basicCubeAnimationY = yRotate;
-
-		basicCubePositionAnimationX = xPosition;
-		basicCubePositionAnimationY = yPosition;
-		basicCubePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + basicCubeAnimationX + ' and a Y axis rotation of ' + basicCubeAnimationY + ' per frame.');
-	}
-
-	if (object == 'spnLambertCube') {
-		animateLambertCubeObject = true;
-
-		lambertCubeAnimationX = xRotate;
-		lambertCubeAnimationY = yRotate;
-
-		lambertCubePositionAnimationX = xPosition;
-		lambertCubePositionAnimationY = yPosition;
-		lambertCubePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + lambertCubeAnimationX + ' and a Y axis rotation of ' + lambertCubeAnimationY + ' per frame.');
-	}
-
-	if (object == 'spnPhongCube') {
-		animatePhongCubeObject = true;
-
-		phongCubeAnimationX = xRotate;
-		phongCubeAnimationY = yRotate;
-
-		phongCubePositionAnimationX = xPosition;
-		phongCubePositionAnimationY = yPosition;
-		phongCubePositionAnimationZ = zPosition;
-
-		console.log('animation added to ' + object + ' with an X axis rotation of ' + phongCubeAnimationX + ' and a Y axis rotation of ' + phongCubeAnimationY + ' per frame.');
-	}
-
-	if (object == 'spnDirectionalLight') {
-		animateDirectionalLightObject = true;
-
-		directionalLightAnimationX = xRotate;
-		directionalLightAnimationY = yRotate;
-
-		directionalLightPositionAnimationX = xPosition;
-		directionalLightPositionAnimationY = yPosition;
-		directionalLightPositionAnimationZ = zPosition;
-	}
-
-	if (object == 'spnPointLight') {
-		animatePointLightObject = true;
-
-		pointLightAnimationX = xRotate;
-		pointLightAnimationY = yRotate;
-
-		pointLightPositionAnimationX = xPosition;
-		pointLightPositionAnimationY = yPosition;
-		pointLightPositionAnimationZ = zPosition;
-	}
-}
+// ---------------------------------------------------------
+// CREATE SCENE/CAMERA:
 
 function spnScene(alias, dyn, fov, x, y, z, backgroundColor) {
-	window.spnCreateScene = new THREE.Scene();
-	var WIDTH = window.innerWidth, HEIGHT = window.innerHeight;
-	spnCreateScene.background = new THREE.Color(backgroundColor);
+	window.spnScene = new THREE.Scene();
+	spnScene.backgroundColor = new THREE.Color(backgroundColor);
 
-	if (alias == false) {
-		console.warn('spnRenderer scene antialias set to ' + alias + ". Please make sure you meant to disable this.");
-	}
+	// ^ sets up scene (spnScene as of rewrite) with a background color
 
 	spnRenderer = new THREE.WebGLRenderer({
-		antialias: alias
+		antialias: alias,
+		shadowMap: true
 	});
-    spnRenderer.setSize(WIDTH, HEIGHT);
-    document.body.appendChild(spnRenderer.domElement);
 
-	// create camera
+	// ^ sets up a renderer with antialiasing variable and a shadow map
 
-	spnCamera = new THREE.PerspectiveCamera(fov, WIDTH / HEIGHT, 0.1, 2000);
-	spnCamera.position.set(x, y, z);
-	spnCreateScene.add(spnCamera);
+	spnRenderer.setSize(windowWidth, windowHeight);
+	document.body.appendChild(spnRenderer.domElement); // adds the renderer as a child to the body
 
-	if (dyn == true) {
-		dynamic = true;
-	} else {
-		console.warn('dynamic scene scaling has been disabled. Any changes to window size will no longer affect the size of the scene.');
-	}
+	// CAMERA:
 
-	console.log('%cscorpion has created a scene sucessfully.', 'background: green; color: white; display: block;');
+	spnCamera = new THREE.PerspectiveCamera(fov, windowWidth / windowHeight, 0.1, 2000); // adds a perspective camera with a near of 0.1 and a far of 2000
+	spnCamera.position.set(x, y, z); // sets spnCamera position
+	spnScene.add(spnCamera); // add camera to the scene
 
-	animate();
+	// OTHER SETTING VARIABLES:
+
+	isDynamic = dyn; // sets the global variable for resizing the renderer when the screen size changes
+
+	animate(); // calls the start of the animation loop once all objects have been added to the scene
 }
 
-function resizeScene() {
-	if(dynamic == true) {
-		spnRenderer.setSize(window.innerWidth, window.innerHeight);
-	} else {
-		return;
+// ---------------------------------------------------------
+// TEXTURE LOADER / CUSTOM MATERIALS
+// this creates a texture loader for making custom materials and allows you to save them globally for applying to objects
+
+function spnCustomMaterial(material, albedo, normal, specular, emissive, materialName) {
+	// load texture maps using the texture loader:
+
+	var loadedAlbedoMap = textureLoader.load(albedo);
+	var loadedNormalMap = textureLoader.load(normal);
+	var loadedSpecularMap = textureLoader.load(specular);
+	var loadedEmissiveMap = textureLoader.load(emissive);
+
+	albedoMap.encoding = THREE.sRGBEncoding; // set the color space to sRGB for the albedo map
+	albedo.anistrophy = 16;
+
+	// BASIC MATERIAL:
+
+	if (material == 'basic') {
+		this[globalObject + materialName] = new THREE.MeshBasicMaterial({ // creates a global stored material 'globalMaterialName'
+			map: loadedAlbedoMap
+		})
+	}
+
+	// LAMBERT MATERIAL:
+
+	if (material == 'lambert') {
+		this[globalObject + materialName] = new THREE.MeshLambertMaterial({
+			map: loadedAlbedoMap,
+			specularMap: loadedSpecularMap,
+			emissiveMap: loadedEmissiveMap
+		})
+	}
+
+	// PHONG MATERIAL:
+
+	if (material == 'phong') {
+		this[globalObject + materialName] = new THREE.MeshPhongMaterial({
+			map: loadedAlbedoMap,
+			normalMap: loadedNormalMap,
+			emissiveMap: loadedEmissiveMap,
+			specularMap: loadedSpecularMap
+		})
 	}
 }
 
-// lighting 
+// ---------------------------------------------------------
+// LIGHTS:
 
-function spnLight(type, color, x, y, z, intensity, shadow) {
-	if (type == ambient) {
+function spnLight(type, color, x, y, z, intensity, shadow, lightName) {
+	if (type == 'ambient') {
+		// CREATE AMBIENT LIGHT:
+
 		var spnAmbientLight = new THREE.AmbientLight(color);
-		spnCreateScene.add(spnAmbientLight);
+		spnScene.add(spnAmbientLight);
 
-		console.log('%cscorpion has created an abient light object sucessfully.', 'background: green; color: white; display: block;');
+		this[globalObject + lightName] = spnAmbientLight;
+	}
 
-		console.log(spnAmbientLight);
-	} else if (type == directional) {
+	if (type == 'directional') {
+		// CREATE DIRECTIONAL LIGHT:
+
 		var spnDirectionalLight = new THREE.DirectionalLight(color, intensity);
 		spnDirectionalLight.position.set(x, y, z);
 		spnDirectionalLight.castShadow = shadow;
-		spnCreateScene.add(spnDirectionalLight);
+		spnScene.add(spnAmbientLight);
 
-		console.log('%cscorpion has created an directional light object sucessfully.', 'background: green; color: white; display: block;');
+		this[globalObject + lightName] = spnAmbientLight;
+	}
 
-		console.log(spnDirectionalLight);
-		spnDirectionalLightGlobal = spnDirectionalLight;
-	} else if (type == point) {
+	if (type == 'point') {
+		// CREATE POINT LIGHT:
+
 		var spnPointLight = new THREE.PointLight(color, intensity);
 		spnPointLight.position.set(x, y, z);
 		spnPointLight.castShadow = shadow;
-		spnCreateScene.add(spnPointLight);
+		spnScene.add(spnPointLight);
 
-		console.log('%cscorpion has created an point light object sucessfully.', 'background: green; color: white; display: block;');
-
-		console.log(spnPointLight);
-		spnPointLightGlobal = spnPointLight;
+		this[globalObject + lightName] = spnAmbientLight;
 	}
+
+	log('_scorpion_ has created a ' + type + ' light.');
 }
 
-function spnCube(material, clr, l, w, depth, x, y, z, wirefrm) { // draw a cube and render it
-	if (material == "basic") {
+// ---------------------------------------------------------
+// CUBES:
+
+function spnCube(material, clr, l, w, depth, x, y, z, wirefrm, objectName) {
+	if (material == 'basic') {
+		// CREATE BASIC CUBE MESH:
+
 		var spnBasicCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshBasicMaterial({color: clr, wireframe: wirefrm}));
 		spnBasicCube.position.x = x;
 		spnBasicCube.position.y = y;
 		spnBasicCube.position.z = z;
-		spnCreateScene.add(spnBasicCube);
-
 		spnBasicCube.castShadow = true;
+		spnScene.add(spnBasicCube);
 
-		console.log('%cscorpion has created a basic cube object sucessfully.', 'background: green; color: white; display: block;');
+		// now we need to store the mesh data in a dynamic global variable
 
-		console.log(spnBasicCube);
-		spnBasicCubeGlobal = spnBasicCube;
+		this[globalObject + objectName] = spnBasicCube;
 	}
 
-	if (material == "lambert") {
+	if (material == 'lambert') {
+		// CREATE LAMBERT CUBE MESH:
+
 		var spnLambertCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshLambertMaterial({color: clr, wireframe: wirefrm}));
 		spnLambertCube.position.x = x;
 		spnLambertCube.position.y = y;
 		spnLambertCube.position.z = z;
-		spnCreateScene.add(spnLambertCube);
-
 		spnLambertCube.castShadow = true;
+		spnScene.add(spnLambertCube);
 
-		console.log('%cscorpion has created a lambert cube object sucessfully.', 'background: green; color: white; display: block;');
-
-		console.log(spnLambertCube);
-		spnLambertCubeGlobal = spnLambertCube;
+		this[globalObject + objectName] = spnLambertCube;
 	}
 
-	if (material == "phong") {
-		var spnPhongCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshLambertMaterial({color: clr, wireframe: wirefrm}));
+	if (material == 'phong') {
+		// CREATE PHONG CUBE MESH:
+
+		var spnPhongCube = new THREE.Mesh(new THREE.CubeGeometry(l, w, depth), new THREE.MeshPhongMaterial({color: clr, wireframe: wirefrm}));
 		spnPhongCube.position.x = x;
 		spnPhongCube.position.y = y;
 		spnPhongCube.position.z = z;
-		spnCreateScene.add(spnPhongCube);
-
 		spnPhongCube.castShadow = true;
+		spnScene.add(spnPhongCube);
 
-		console.log('%cscorpion has created a phong cube object sucessfully.', 'background: green; color: white; display: block;');
-
-		console.log(spnPhongCube);
-		spnPhongCubeGlobal = spnPhongCube;
+		this[globalObject + objectName] = spnPhongCube;
 	}
+
+	log('_scorpion_ has created a ' + material + ' cube.');
 }
 
-function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z, wirefrm) {
+// ---------------------------------------------------------
+// SPHERES:
+
+function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z, wirefrm, objectName) {
 	if (material == 'basic') {
+		// CREATE BASIC SPHERE MESH
+
 		var spnBasicSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshBasicMaterial({color: clr, wireframe: wirefrm}));
 		spnBasicSphere.position.x = x;
 		spnBasicSphere.position.y = y;
 		spnBasicSphere.position.z = z;
+		spnBasicSphere.castShadow = true;
 		spnCreateScene.add(spnBasicSphere);
+
+		this[globalObject + objectName] = spnBasicSphere;
 	}
 
 	if (material == 'lambert') {
+		// CREATE LAMBERT SPHERE MESH
+
 		var spnLambertSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshLambertMaterial({color: clr, wireframe: wirefrm}));
 		spnLambertSphere.position.x = x;
 		spnLambertSphere.position.y = y;
 		spnLambertSphere.position.z = z;
+		spnLambertSphere.castShadow = true;
 		spnCreateScene.add(spnLambertSphere);
+
+		this[globalObject + objectName] = spnLambertSphere;
 	}
 
 	if (material == 'phong') {
+		// CREATE PHONG SPHERE MESH
+
 		var spnPhongSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI * 2), new THREE.MeshPhongMaterial({color: clr, wireframe: wirefrm}));
 		spnPhongSphere.position.x = x;
 		spnPhongSphere.position.y = y;
 		spnPhongSphere.position.z = z;
+		spnPhongSphere.castShadow = true;
 		spnCreateScene.add(spnPhongSphere);
+
+		this[globalObject + objectName] = spnPhongSphere;
 	}
+
+	log('_scorpion_ has created a ' + material + ' sphere.');
 }
 
-function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm) {
+// ---------------------------------------------------------
+// WALLS:
+
+function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, clr, wirefrm, objectName) {
 	if (triangles > 100) {
-		console.warn('the floor triangles is very high. you may want to lower this number to increase performance.');
+		log('[c="color: red"]the triangles in this mesh are very high. you may want to lower this to maintain stable performance.[c]')
 	}
 
-	if (material == "basic") {
-		var spnBasicPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshBasicMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+	if (material == 'basic') {
+		// CREATE BASIC WALL MESH:
 
-		spnBasicPlane.position.x = x;
-		spnBasicPlane.position.y = y;
-		spnBasicPlane.position.z = z;
-
-		spnBasicPlane.material.side = THREE.DoubleSide;
-
-		spnBasicPlane.rotation.x = -Math.PI / 2;
-
-		console.log(spnBasicPlane);
-		spnCreateScene.add(spnBasicPlane);
-
-		console.log('%cscorpion has created a basic floor sucessfully.', 'background: green; color: white; display: block;');
-	}
-
-	if (material == "lambert") {
-		var spnLambertPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshLambertMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
-
-		spnLambertPlane.position.x = x;
-		spnLambertPlane.position.y = y;
-		spnLambertPlane.position.z = z;
-
-		spnLambertPlane.material.side = THREE.DoubleSide;
-		spnLambertPlane.receiveShadow = true;
-
-		spnLambertPlane.rotation.x = -Math.PI / 2;
-
-		console.log(spnLambertPlane);
-		spnCreateScene.add(spnLambertPlane);
-
-		console.log('%cscorpion has created a lambert floor sucessfully.', 'background: green; color: white; display: block;');
-	}
-
-	if (material == "phong") {
-		var spnPhongPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshPhongMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
-
-		spnPhongPlane.position.x = x;
-		spnPhongPlane.position.y = y;
-		spnPhongPlane.position.z = z;
-
-		spnPhongPlane.material.side = THREE.DoubleSide;
-		spnPhongPlane.receiveShadow = true;
-
-		spnPhongPlane.rotation.x = -Math.PI / 2;
-
-		console.log(spnPhongPlane);
-		spnCreateScene.add(spnPhongPlane);
-
-		console.log('%cscorpion has created a phong floor sucessfully.', 'background: green; color: white; display: block;');
-	}
-}
-
-function spnWall(material, width, height, x, y, z, xRotate, yRotate, triangles, clr, wirefrm) {
-	if (triangles > 100) {
-		console.warn('the wall triangles is very high. you may want to lower this number to increase performance.');
-	}
-
-	if (material == "basic") {
 		var spnBasicWallPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshBasicMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
-
 		spnBasicWallPlane.position.x = x;
 		spnBasicWallPlane.position.y = y;
 		spnBasicWallPlane.position.z = z;
-
 		spnBasicWallPlane.material.side = THREE.DoubleSide;
-
 		spnBasicWallPlane.rotation.x = xRotate;
 		spnBasicWallPlane.rotation.y = yRotate;
+		spnScene.add(spnBasicWallPlane);
 
-		console.log(spnBasicWallPlane);
-		spnCreateScene.add(spnBasicWallPlane);
-
-		console.log('%cscorpion has created a basic wall sucessfully.', 'background: green; color: white; display: block;');
+		this[globalObject + objectName] = spnBasicWallPlane;
 	}
 
-	if (material == "lambert") {
-		var spnLambertWallPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshLambertMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+	if (material == 'lambert') {
+		// CREATE LAMBERT WALL MESH:
 
+		var spnLambertWallPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshLambertMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
 		spnLambertWallPlane.position.x = x;
 		spnLambertWallPlane.position.y = y;
 		spnLambertWallPlane.position.z = z;
-
 		spnLambertWallPlane.material.side = THREE.DoubleSide;
-		spnLambertWallPlane.receiveShadow = true;
-
 		spnLambertWallPlane.rotation.x = xRotate;
 		spnLambertWallPlane.rotation.y = yRotate;
+		spnLambertWallPlane.receiveShadow = true;
+		spnScene.add(spnLambertWallPlane);
 
-		console.log(spnLambertWallPlane);
-		spnCreateScene.add(spnLambertWallPlane);
-
-		console.log('%cscorpion has created a lambert wall sucessfully.', 'background: green; color: white; display: block;');
+		this[globalObject + objectName] = spnLambertWallPlane;
 	}
 
-	if (material == "phong") {
-		var spnPhongWallPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshPhongMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+	if (material == 'phong') {
+		// CREATE PHONG WALL MESH:
 
+		var spnPhongWallPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshPhongMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
 		spnPhongWallPlane.position.x = x;
 		spnPhongWallPlane.position.y = y;
 		spnPhongWallPlane.position.z = z;
-
 		spnPhongWallPlane.material.side = THREE.DoubleSide;
-		spnPhongWallPlane.receiveShadow = true;
-
 		spnPhongWallPlane.rotation.x = xRotate;
 		spnPhongWallPlane.rotation.y = yRotate;
+		spnPhongWallPlane.receiveShadow = true;
+		spnScene.add(spnPhongWallPlane);
 
-		console.log(spnPhongWallPlane);
-		spnCreateScene.add(spnPhongWallPlane);
+		this[globalObject + objectName] = spnPhongWallPlane;
+	}
 
-		console.log('%cscorpion has created a phong wall sucessfully.', 'background: green; color: white; display: block;');
+	log('_scorpion_ has created a ' + material + ' wall.');
+}
+
+// ---------------------------------------------------------
+// FLOORS:
+
+function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm, objectName) {
+	if (material == 'basic') {
+		// CREATE BASIC FLOOR:
+
+		var spnBasicFloorPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshBasicMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+		spnBasicFloorPlane.position.x = x;
+		spnBasicFloorPlane.position.y = y;
+		spnBasicFloorPlane.position.z = z;
+		spnBasicFloorPlane.material.side = THREE.DoubleSide;
+		spnBasicFloorPlane.rotation.x = -Math.PI / 2;
+		spnScene.add(spnBasicFloorPlane);
+
+		this[globalObject + objectName] = spnBasicFloorPlane;
+	}
+
+	if (material == 'lambert') {
+		// CREATE LAMBERT FLOOR:
+
+		var spnLambertFloorPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshLambertMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+		spnLambertFloorPlane.position.x = x;
+		spnLambertFloorPlane.position.y = y;
+		spnLambertFloorPlane.position.z = z;
+		spnLambertFloorPlane.material.side = THREE.DoubleSide;
+		spnLambertFloorPlane.rotation.x = -Math.PI / 2;
+		spnLambertFloorPlane.receiveShadow = true;
+		spnScene.add(spnLambertFloorPlane);
+
+		this[globalObject + objectName] = spnLambertFloorPlane;
+	}
+
+	if (material == 'phong') {
+		// CREATE PHONG FLOOR:
+
+		var spnPhongFloorPlane = new THREE.Mesh(new THREE.PlaneGeometry(width, height, triangles, triangles), new THREE.MeshPhongMaterial({color: clr, opacity: 1, wireframe: wirefrm}));
+		spnPhongFloorPlane.position.x = x;
+		spnPhongFloorPlane.position.y = y;
+		spnPhongFloorPlane.position.z = z;
+		spnPhongFloorPlane.material.side = THREE.DoubleSide;
+		spnPhongFloorPlane.rotation.x = -Math.PI / 2;
+		spnPhongFloorPlane.receiveShadow = true;
+		spnScene.add(spnPhongFloorPlane);
+
+		this[globalObject + objectName] = spnPhongFloorPlane;
 	}
 }
