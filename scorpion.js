@@ -41,6 +41,9 @@ window.addEventListener('resize', resizeRenderer, false); // resize renderer if 
 
 function resizeRenderer() {
 	if (isDynamic == true) {
+		spnCamera.aspect = window.innerWidth / window.innerHeight;
+		spnCamera.updateProjectionMatrix();
+
 		spnRenderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
