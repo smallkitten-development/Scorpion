@@ -276,7 +276,7 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 		spnBasicSphere.position.y = y;
 		spnBasicSphere.position.z = z;
 		spnBasicSphere.castShadow = true;
-		spnCreateScene.add(spnBasicSphere);
+		spnScene.add(spnBasicSphere);
 
 		this[globalObject + objectName] = spnBasicSphere;
 	}
@@ -289,7 +289,7 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 		spnLambertSphere.position.y = y;
 		spnLambertSphere.position.z = z;
 		spnLambertSphere.castShadow = true;
-		spnCreateScene.add(spnLambertSphere);
+		spnScene.add(spnLambertSphere);
 
 		this[globalObject + objectName] = spnLambertSphere;
 	}
@@ -302,7 +302,7 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 		spnPhongSphere.position.y = y;
 		spnPhongSphere.position.z = z;
 		spnPhongSphere.castShadow = true;
-		spnCreateScene.add(spnPhongSphere);
+		spnScene.add(spnPhongSphere);
 
 		this[globalObject + objectName] = spnPhongSphere;
 	}
