@@ -199,7 +199,7 @@ function spnLight(type, color, x, y, z, intensity, shadow, lightName) {
 		spnDirectionalLight.castShadow = shadow;
 		spnScene.add(spnAmbientLight);
 
-		this[globalObject + lightName] = spnAmbientLight;
+		this[globalObject + lightName] = spnDirectionalLight;
 	}
 
 	if (type == 'point') {
@@ -210,7 +210,7 @@ function spnLight(type, color, x, y, z, intensity, shadow, lightName) {
 		spnPointLight.castShadow = shadow;
 		spnScene.add(spnPointLight);
 
-		this[globalObject + lightName] = spnAmbientLight;
+		this[globalObject + lightName] = spnPointLight;
 	}
 
 	log('_scorpion_ has created a ' + type + ' light.');
