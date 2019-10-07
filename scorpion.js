@@ -424,3 +424,34 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm, obj
 		this[globalObject + objectName] = spnPhongFloorPlane;
 	}
 }
+
+// ---------------------------------------------------------
+// OBJECT AND MATERIAL LOADER:
+
+function spnObjectLoader(path, material, object, x, y, z, xRotate, yRotate, zRotate, objectName) {
+	var spnMaterialLoader = new THREE.MTLLoader();
+	spnMaterialLoader.setPath(path);
+	spnMaterialLoader.load(material, function(importedMaterials) {
+		importedMaterials.preload();
+
+		// OBJECT LOADING:
+
+		var spnObjectLoader = new THREE.OBJLoader();
+		spnObjectLoader.setMaterials(importedMaterials);
+		spnObjectLoader.setPath(path);
+		spnObjectLoader.load(object, function(importedObject) {
+			importedObject.position.x = x;
+			importedObject.position.y = y;
+			importedObject.position.z = z;
+
+			importedObject.rotation.x = xRotate;
+			importedObject.rotation.y = yRotate;
+			importedObject.rotation.z = zRotate;
+
+			spnScene.add(importedObject);
+			this[globalObject + objectName] = importedObject;
+		})
+	})
+}
+
+// ^ this should load textures from a material and apply them to an imported mesh
