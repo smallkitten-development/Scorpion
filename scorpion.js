@@ -75,6 +75,14 @@ function spnPositionAnimation(object, speed, x, y, z, animationName) {
 	log('added a positional animation called global' + animationName + ' to a global object.');
 }
 
+function spnScaleAnimation(object, speed, width, height, depth, animationName) {
+	this[globalObject + animationName] = window.setInterval(function(){
+  		object.scale.x -= speed * width;
+		object.scale.y -= speed * height;
+		object.scale.z -= speed * depth;
+	}, 16);
+}
+
 // ---------------------------------------------------------
 // COLORS:
 
@@ -199,7 +207,7 @@ function spnLight(type, color, x, y, z, intensity, shadow, lightName) {
 		spnDirectionalLight.castShadow = shadow;
 		spnScene.add(spnAmbientLight);
 
-		this[globalObject + lightName] = spnAmbientLight;
+		this[globalObject + lightName] = spnDirectionalLight;
 	}
 
 	if (type == 'point') {
@@ -210,7 +218,7 @@ function spnLight(type, color, x, y, z, intensity, shadow, lightName) {
 		spnPointLight.castShadow = shadow;
 		spnScene.add(spnPointLight);
 
-		this[globalObject + lightName] = spnAmbientLight;
+		this[globalObject + lightName] = spnPointLight;
 	}
 
 	log('_scorpion_ has created a ' + type + ' light.');
@@ -276,7 +284,7 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 		spnBasicSphere.position.y = y;
 		spnBasicSphere.position.z = z;
 		spnBasicSphere.castShadow = true;
-		spnCreateScene.add(spnBasicSphere);
+		spnScene.add(spnBasicSphere);
 
 		this[globalObject + objectName] = spnBasicSphere;
 	}
@@ -289,7 +297,7 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 		spnLambertSphere.position.y = y;
 		spnLambertSphere.position.z = z;
 		spnLambertSphere.castShadow = true;
-		spnCreateScene.add(spnLambertSphere);
+		spnScene.add(spnLambertSphere);
 
 		this[globalObject + objectName] = spnLambertSphere;
 	}
@@ -302,7 +310,7 @@ function spnSphere(material, radius, widthSegments, heightSegments, clr, x, y, z
 		spnPhongSphere.position.y = y;
 		spnPhongSphere.position.z = z;
 		spnPhongSphere.castShadow = true;
-		spnCreateScene.add(spnPhongSphere);
+		spnScene.add(spnPhongSphere);
 
 		this[globalObject + objectName] = spnPhongSphere;
 	}
