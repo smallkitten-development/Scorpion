@@ -75,6 +75,14 @@ function spnPositionAnimation(object, speed, x, y, z, animationName) {
 	log('added a positional animation called global' + animationName + ' to a global object.');
 }
 
+function spnScaleAnimation(object, speed, width, height, depth, animationName) {
+	this[globalObject + animationName] = window.setInterval(function(){
+  		object.scale.x -= speed * width;
+		object.scale.y -= speed * height;
+		object.scale.z -= speed * depth;
+	}, 16);
+}
+
 // ---------------------------------------------------------
 // COLORS:
 
@@ -110,10 +118,7 @@ function spnScene(alias, dyn, fov, x, y, z, backgroundColor) {
 
 	// ^ sets up scene (spnScene as of rewrite) with a background color
 
-	spnRenderer = new THREE.WebGLRenderer({
-		antialias: alias,
-		shadowMap: true
-	});
+	spnRenderer = new THREE.WebGLRenderer({antialias: alias, shadowMapEnabled: true});
 
 	// ^ sets up a renderer with antialiasing variable and a shadow map
 
@@ -416,3 +421,34 @@ function spnFloor(material, width, height, x, y, z, triangles, clr, wirefrm, obj
 		this[globalObject + objectName] = spnPhongFloorPlane;
 	}
 }
+
+// ---------------------------------------------------------
+// OBJECT AND MATERIAL LOADER:
+
+function spnObjectLoader(path, material, object, x, y, z, xRotate, yRotate, zRotate, objectName) {
+	var spnMaterialLoader = new THREE.MTLLoader();
+	spnMaterialLoader.setPath(path);
+	spnMaterialLoader.load(material, function(importedMaterials) {
+		importedMaterials.preload();
+
+		// OBJECT LOADING:
+
+		var spnObjectLoader = new THREE.OBJLoader();
+		spnObjectLoader.setMaterials(importedMaterials);
+		spnObjectLoader.setPath(path);
+		spnObjectLoader.load(object, function(importedObject) {
+			importedObject.position.x = x;
+			importedObject.position.y = y;
+			importedObject.position.z = z;
+
+			importedObject.rotation.x = xRotate;
+			importedObject.rotation.y = yRotate;
+			importedObject.rotation.z = zRotate;
+
+			spnScene.add(importedObject);
+			this[globalObject + objectName] = importedObject;
+		})
+	})
+}
+
+// ^ this should load textures from a material and apply them to an imported mesh

@@ -11,11 +11,14 @@ spnCube('phong', white, 2, 2, 2, 0, 0, -5, false, 'CubeOne');
 
 // now we can make a light
 // spnLight(type, color, x, y, z, intensity, shadow, lightName)
-spnLight('point', white, 0, 0, -1, .8, false, 'LightOne');
+spnLight('point', white, 0, 0, -1, .8, true, 'LightOne');
 
 // animate the cube with the built in object rotation script
 
 spnRotationAnimation(globalCubeOne, 0.01, 2, 0, 3, 'CubeOneAnimationRotate'); 
+spnScaleAnimation(globalCubeOne, 0.005, 2, 1, 3, 'CubeOneAnimationScale');
+
+spnPositionAnimation(spnCamera, 0.01, 0, 0, -1, 'CameraAnimationMove');
 
 // ^ this uses the new global dynamic variable implementation
 // eg. global + whatever you set as the object name
