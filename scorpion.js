@@ -29,6 +29,7 @@ function spnDebug(bool) {
 // GENERAL SETTINGS AND VARIABLES:
 
 var globalObject = 'global'; // for piggy packing dynamic global variables
+var scorpionSelectedObject; // for pointer raycast, click an object to fill this
 
 var windowWidth = window.innerWidth;
 var windowHeight = window.innerHeight;
@@ -52,6 +53,7 @@ function resizeRenderer() {
 
 //---------------------------------------------------------
 // UI AND NON PROGRAMATIC VISUAL:
+// when you click an object, it gets added to scorpionSelectedObject
 
 document.addEventListener('mousedown', mouseClickHandler, false); // adds mouse movement listener
 
@@ -66,13 +68,15 @@ function mouseClickHandler(event) {
 
     var intersects = spnRaycaster.intersectObjects(spnScene.children);
 
+    if (scorpionSelectedObject != null) { // if the global selection variable is full when selecting another object remove wireframe before replace
+    	scorpionSelectedObject.material.wireframe = false;
+    }
+
     for (var i = 0; i < intersects.length; i++) {
-    	var object = intersects[0].object; // get object from ray
-    	console.log(object);
+    	scorpionSelectedObject = intersects[0].object; // get object from ray
+    	console.log(scorpionSelectedObject);
 
-    	object.material.wireframe = true;
-
-    	// ^ add animation here
+    	scorpionSelectedObject.material.wireframe = true;
     }
 }
 
