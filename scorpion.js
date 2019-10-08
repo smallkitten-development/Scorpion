@@ -50,6 +50,32 @@ function resizeRenderer() {
 	// verbose debug logging could be added here
 }
 
+//---------------------------------------------------------
+// UI AND NON PROGRAMATIC VISUAL:
+
+document.addEventListener('mousedown', mouseClickHandler, false); // adds mouse movement listener
+
+var raycaster, mouse = {x: 0, y: 0};
+var spnRaycaster = new THREE.Raycaster();
+
+function mouseClickHandler(event) {
+	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+    spnRaycaster.setFromCamera(mouse, spnCamera);
+
+    var intersects = spnRaycaster.intersectObjects(spnScene.children);
+
+    for (var i = 0; i < intersects.length; i++) {
+    	var object = intersects[0].object; // get object from ray
+    	console.log(object);
+
+    	object.material.wireframe = true;
+
+    	// ^ add animation here
+    }
+}
+
 // ---------------------------------------------------------
 // ANIMATIONS:
 // these animations cannot be stopped, however they can be applied to multiple objects.
