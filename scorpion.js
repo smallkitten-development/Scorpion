@@ -118,10 +118,7 @@ function spnScene(alias, dyn, fov, x, y, z, backgroundColor) {
 
 	// ^ sets up scene (spnScene as of rewrite) with a background color
 
-	spnRenderer = new THREE.WebGLRenderer({
-		antialias: alias,
-		shadowMap: true
-	});
+	spnRenderer = new THREE.WebGLRenderer({antialias: alias, shadowMapEnabled: true});
 
 	// ^ sets up a renderer with antialiasing variable and a shadow map
 
