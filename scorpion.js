@@ -28,7 +28,7 @@ function spnDebug(bool) {
 //---------------------------------------------------------
 // GENERAL SETTINGS AND VARIABLES:
 
-var globalObject = 'global'; // for piggy packing dynamic global variables
+var globalObject = 'global'; // for piggy backing dynamic global variables using this[] =
 var scorpionSelectedObject; // for pointer raycast, click an object to fill this
 
 var windowWidth = window.innerWidth;
@@ -52,10 +52,12 @@ function resizeRenderer() {
 }
 
 //---------------------------------------------------------
-// UI AND NON PROGRAMATIC VISUAL:
-// when you click an object, it gets added to scorpionSelectedObject
+// UI AND NON PROGRAMATIC VISUAL ELEMENTS:
 
-document.addEventListener('mousedown', mouseClickHandler, false); // adds mouse movement listener
+
+// when you click an object, it gets added to the scorpionSelectedObject global variable for editing:
+
+document.addEventListener('mousedown', mouseClickHandler, false); // adds mouse click listener
 
 var raycaster, mouse = {x: 0, y: 0};
 var spnRaycaster = new THREE.Raycaster();
@@ -73,11 +75,52 @@ function mouseClickHandler(event) {
     }
 
     for (var i = 0; i < intersects.length; i++) {
-    	scorpionSelectedObject = intersects[0].object; // get object from ray
-    	console.log(scorpionSelectedObject);
-
-    	scorpionSelectedObject.material.wireframe = true;
+    	scorpionSelectedObject = intersects[0].object; // get object from ray target
+    	scorpionSelectedObject.material.wireframe = true; // make ray target wireframe
     }
+}
+
+// For handling keypresses:
+
+document.addEventListener('keydown', keyPressHandler, false);
+document.addEventListener('keyup', keyPressHandler, false);
+
+var cubeKeyDown = false;
+
+function keyPressHandler(event) {
+	var keyCode = event.keyCode;
+
+	if (event.type == 'keydown' && keyCode == 67) {
+		cubeKeyDown = true;
+	} else if (event.type == 'keyup' && keyCode == 67) {
+		cubeKeyDown = false;
+	}
+}
+
+// for handling object, hold and drag stuff:
+
+document.addEventListener('mousedown', drawObjectByDrag, false);
+document.addEventListener('mouseup', endDrawObjectByDrag, false);
+
+var startingMouseX;
+var endingMouseX;
+
+function drawObjectByDrag(event) {
+	startingMouseX = event.clientX;
+
+	if (cubeKeyDown == true) {
+		log('_scorpion is now drawing a cube_');
+	}
+}
+
+function endDrawObjectByDrag(event) {
+	endingMouseX = event.clientX;
+	mouseChangeInPos = Math.abs(startingMouseX - endingMouseX);
+	
+	if (cubeKeyDown == true) {
+		spnCube('basic', white, mouseChangeInPos / 1000, mouseChangeInPos / 1000, mouseChangeInPos / 1000, spnCamera.position.x, spnCamera.position.y, spnCamera.position.z - (mouseChangeInPos / 1000) * 2, false /*, no name */);
+		log('scorpion has drawn a cube');
+	}
 }
 
 // ---------------------------------------------------------
@@ -142,13 +185,13 @@ function animate() {
 // ---------------------------------------------------------
 // CREATE SCENE/CAMERA:
 
-function spnScene(alias, dyn, fov, x, y, z, backgroundColor) {
+function spnScene(fov, x, y, z, backgroundColor) {
 	window.spnScene = new THREE.Scene();
 	spnScene.backgroundColor = new THREE.Color(backgroundColor);
 
 	// ^ sets up scene (spnScene as of rewrite) with a background color
 
-	spnRenderer = new THREE.WebGLRenderer({antialias: alias, shadowMapEnabled: true});
+	spnRenderer = new THREE.WebGLRenderer({antialias: true, shadowMapEnabled: true});
 
 	// ^ sets up a renderer with antialiasing variable and a shadow map
 
@@ -163,7 +206,7 @@ function spnScene(alias, dyn, fov, x, y, z, backgroundColor) {
 
 	// OTHER SETTING VARIABLES:
 
-	isDynamic = dyn; // sets the global variable for resizing the renderer when the screen size changes
+	isDynamic = true; // sets the global variable for resizing the renderer when the screen size changes (enabled by default 10/8)
 
 	animate(); // calls the start of the animation loop once all objects have been added to the scene
 }
