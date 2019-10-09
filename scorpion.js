@@ -53,6 +53,7 @@ function resizeRenderer() {
 
 //---------------------------------------------------------
 // UI AND NON PROGRAMATIC VISUAL ELEMENTS:
+// (ex. clicking on objects to put them in the global scope and dragging to create objects)
 
 
 // when you click an object, it gets added to the scorpionSelectedObject global variable for editing:
@@ -62,7 +63,7 @@ document.addEventListener('mousedown', mouseClickHandler, false); // adds mouse 
 var raycaster, mouse = {x: 0, y: 0};
 var spnRaycaster = new THREE.Raycaster();
 
-function mouseClickHandler(event) {
+function mouseClickHandler(event) { // makes a raycaster at the mouse and makes whatever it hits wireframe and puts it in the global scope
 	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
@@ -77,17 +78,20 @@ function mouseClickHandler(event) {
     for (var i = 0; i < intersects.length; i++) {
     	scorpionSelectedObject = intersects[0].object; // get object from ray target
     	scorpionSelectedObject.material.wireframe = true; // make ray target wireframe
+
+    	Toastify({text: "An object has been selected.",	duration: 2000, newWindow: true, close: true, gravity: "top", position: 'left',	backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",	stopOnFocus: true, onClick: function(){}}).showToast();
     }
 }
 
-// For handling keypresses:
+// For handling keypresses that need to happen BEFORE dragging:
 
 document.addEventListener('keydown', keyPressHandler, false);
 document.addEventListener('keyup', keyPressHandler, false);
 
 var cubeKeyDown = false;
+var sphereKeyDown = false;
 
-function keyPressHandler(event) {
+function keyPressHandler(event) { // if a key is pressed
 	var keyCode = event.keyCode;
 
 	if (event.type == 'keydown' && keyCode == 67) {
@@ -95,9 +99,15 @@ function keyPressHandler(event) {
 	} else if (event.type == 'keyup' && keyCode == 67) {
 		cubeKeyDown = false;
 	}
+
+	if (event.type == 'keydown' && keyCode == 86) {
+		sphereKeyDown = true;
+	} else if (event.type == 'keyup' && keyCode == 86) {
+		sphereKeyDown = false;
+	}
 }
 
-// for handling object, hold and drag stuff:
+// for holding/dragging
 
 document.addEventListener('mousedown', drawObjectByDrag, false);
 document.addEventListener('mouseup', endDrawObjectByDrag, false);
@@ -109,18 +119,35 @@ function drawObjectByDrag(event) {
 	startingMouseX = event.clientX;
 	mouseClicked = true;
 
+	if (cubeKeyDown == true || sphereKeyDown == true) {
+		Toastify({text: "Object drawing has started.",	duration: 2000, newWindow: true, close: true, gravity: "top", position: 'left',	backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",	stopOnFocus: true, onClick: function(){}}).showToast();
+	}
+
 	if (cubeKeyDown == true) {
 		log('_scorpion is now drawing a cube_');
+	}
+
+	if (sphereKeyDown == true) {
+		log('_scorpion is now drawing a sphere_');
 	}
 }
 
 function endDrawObjectByDrag(event) {
 	endingMouseX = event.clientX;
 	mouseChangeInPos = Math.abs(startingMouseX - endingMouseX);
-	
+
 	if (cubeKeyDown == true) {
 		spnCube('basic', white, mouseChangeInPos / 1000, mouseChangeInPos / 1000, mouseChangeInPos / 1000, spnCamera.position.x, spnCamera.position.y, spnCamera.position.z - (mouseChangeInPos / 1000) * 2, false /*, no name */);
 		log('scorpion has drawn a cube');
+
+		Toastify({text: "A cube has been created",	duration: 2000, newWindow: true, close: true, gravity: "top", position: 'left',	backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",	stopOnFocus: true, onClick: function(){}}).showToast();
+	}
+
+	if (sphereKeyDown == true) {
+		spnSphere('basic', mouseChangeInPos / 1000, mouseChangeInPos / 4, mouseChangeInPos / 4, white, spnCamera.position.x, spnCamera.position.y, spnCamera.position.z - (mouseChangeInPos / 1000) * 2, false /*, no name*/);
+		log('scorpion has drawn a sphere');
+
+		Toastify({text: "A sphere has been created",	duration: 2000, newWindow: true, close: true, gravity: "top", position: 'left',	backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",	stopOnFocus: true, onClick: function(){}}).showToast();
 	}
 }
 
