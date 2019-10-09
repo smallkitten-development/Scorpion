@@ -39,7 +39,7 @@ function xValuesFunc() {
 }
 
 
-spnScene(true, true, 120, 0, 0, 5, black);
+spnScene(120, 0, 0, 5, black);
 spnLight('point', white, 0, 0, 1, 2, true, 'Light');
 
 const interval = setInterval(function() {

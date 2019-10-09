@@ -107,6 +107,7 @@ var endingMouseX;
 
 function drawObjectByDrag(event) {
 	startingMouseX = event.clientX;
+	mouseClicked = true;
 
 	if (cubeKeyDown == true) {
 		log('_scorpion is now drawing a cube_');
