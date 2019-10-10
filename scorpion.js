@@ -28,7 +28,8 @@ function spnDebug(bool) {
 //---------------------------------------------------------
 // GENERAL SETTINGS AND VARIABLES:
 
-var globalObject = 'global'; // for piggy packing dynamic global variables
+var globalObject = 'global'; // for piggy backing dynamic global variables using this[] =
+var scorpionSelectedObject; // for pointer raycast, click an object to fill this
 
 var windowWidth = window.innerWidth;
 var windowHeight = window.innerHeight;
@@ -112,13 +113,13 @@ function animate() {
 // ---------------------------------------------------------
 // CREATE SCENE/CAMERA:
 
-function spnScene(alias, dyn, fov, x, y, z, backgroundColor) {
+function spnScene(fov, x, y, z, backgroundColor) {
 	window.spnScene = new THREE.Scene();
 	spnScene.backgroundColor = new THREE.Color(backgroundColor);
 
 	// ^ sets up scene (spnScene as of rewrite) with a background color
 
-	spnRenderer = new THREE.WebGLRenderer({antialias: alias, shadowMapEnabled: true});
+	spnRenderer = new THREE.WebGLRenderer({antialias: true, shadowMapEnabled: true});
 
 	// ^ sets up a renderer with antialiasing variable and a shadow map
 
@@ -133,9 +134,20 @@ function spnScene(alias, dyn, fov, x, y, z, backgroundColor) {
 
 	// OTHER SETTING VARIABLES:
 
-	isDynamic = dyn; // sets the global variable for resizing the renderer when the screen size changes
+	isDynamic = true; // sets the global variable for resizing the renderer when the screen size changes (enabled by default 10/8)
 
 	animate(); // calls the start of the animation loop once all objects have been added to the scene
+}
+
+// ---------------------------------------------------------
+// GRID
+
+function spnGrid(size, sections, x, y, z, object) {
+	var spnGrid = new THREE.GridHelper(size, sections);
+	spnGrid.position.x = x;
+	spnGrid.position.y = y;
+	spnGrid.position.z = z;
+	object.add(spnGrid);
 }
 
 // ---------------------------------------------------------

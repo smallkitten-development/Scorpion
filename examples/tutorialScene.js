@@ -2,7 +2,7 @@
 // first we have to set up a scene
 
 // spnScene(alias, dyn, fov, x, y, z, backgroundColor) 
-spnScene(true, true, 90, 0, 0, 0, black);
+spnScene(90, 0, 0, 0, black);
 
 // ^ makes a scene and a camera
 
