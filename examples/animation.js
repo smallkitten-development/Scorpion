@@ -2,7 +2,7 @@
 
 // SCENE SETUP:
 
-spnScene(80, 0, 0, 0, black); // create a scene with a renderer and camera
+spnScene(true, true, 80, 0, 0, 0, black); // create a scene with a renderer and camera
 
 // OBJECT SETUP:
 
