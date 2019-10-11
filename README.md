@@ -1,5 +1,5 @@
-# Scorpion Engine
-A 3D engine made with Javascript. Scorpion makes it easy to set up scenes, cameras, and objects using only one line of code.
+# Scorpion
+A 3D library built on three.js. Scorpion makes it easy to set up scenes, cameras, and objects using only one line of code.
 
 For example, this whole scene is creted using only **4 lines of code.** Using vanilla three.js, this would take over **20** lines of code:
 
