@@ -1,7 +1,7 @@
-// Scorpion 3D engine built on three.js
+// Scorpion library engine built on three.js
 // rewritten 10/4/19
 
-log('_scorpion engine_ v0.1 -- *made by smallkitten development*');
+log('_scorpion_ v0.2b -- *made by smallkitten development*');
 log('rewritten from scratch on _10/4/19_');
 
 var stats = new Stats(); // stats.js by mrdoob
