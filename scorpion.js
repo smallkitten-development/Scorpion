@@ -108,10 +108,11 @@ function animate() {
 
 	requestAnimationFrame(animate);
 
-	if (spnCustomRenderTarget = true) { // if theres a custom render target, render to it!
-		spnRenderer.render(spnScene, spnCamera, gblRTSecondaryTarget); // renders objects and passes renderer info to custom render target "SecondaryTarget"
-	} else {
+	if (spnCustomRenderTarget = false) { // check for custom target
 		spnRenderer.render(spnScene, spnCamera);
+	} else {
+		spnRenderer.render(spnScene, spnCamera); 
+		spnRenderer.setRenderTarget(gblRTSecondaryTarget); // renders objects and passes renderer info to custom render target "SecondaryTarget"
 	}
 
 	stats.end(); // end stats call here
