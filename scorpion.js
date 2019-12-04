@@ -40,6 +40,8 @@ var textureLoader = new THREE.TextureLoader(); // set this here so the code in t
 var isDynamic = false; // is the renderer dynamic?
 var spnCustomRenderTarget = false; // is there a custom render target to render to?
 
+var spnRay = 'ray'; // holds ray info
+
 window.addEventListener('resize', resizeRenderer, false); // resize renderer if the screen size changes
 
 function resizeRenderer() {
@@ -112,7 +114,7 @@ function animate() {
 		spnRenderer.render(spnScene, spnCamera);
 	} else {
 		spnRenderer.render(spnScene, spnCamera); 
-		spnRenderer.setRenderTarget(gblRTSecondaryTarget); // renders objects and passes renderer info to custom render target "SecondaryTarget"
+		// spnRenderer.setRenderTarget(gblRTSecondaryTarget); // renders objects and passes renderer info to custom render target "SecondaryTarget"
 	}
 
 	stats.end(); // end stats call here
@@ -487,4 +489,14 @@ function spnCreateRenderTarget(targetName) { // name -- "SecondaryTarget" -- to 
 	// ADD A BUFFER FOR GRABBING PER PIXEL INFO
 
 	log('a new _render target_ has been created');
+}
+
+// RAY CASTING
+// using this along with the info from the render target should give plenty of info
+
+function spnScreenspaceRaycasting() {
+	log('_RAYCASTER ENABLED_');
+
+	var spnRendererSize = spnRenderer.getSize(); // calculate rays being cast
+	log(spnRendererSize.x * spnRendererSize.y + ' rays being cast');
 }
