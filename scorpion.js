@@ -499,4 +499,9 @@ function spnScreenspaceRaycasting() {
 
 	var spnRendererSize = spnRenderer.getSize(); // calculate rays being cast
 	log(spnRendererSize.x * spnRendererSize.y + ' rays being cast');
+
+	this[globalObject + "ScreenspaceVector"] = new THREE.Vector2();
+	this[globalObject + "ScreenspaceVector2"] = new THREE.Vector2(0, 5);
+
+	spnCube('basic', white, 1, 1, 1, globalScreenspaceVector.x, globalScreenspaceVector.y, -2, false, 'VectorCube');
 }
