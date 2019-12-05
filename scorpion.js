@@ -115,11 +115,12 @@ function animate() {
 
 	requestAnimationFrame(animate);
 
-	if (spnCustomRenderTarget = false) { // check for custom target
-		spnRenderer.render(spnScene, spnCamera);
+	spnRenderer.render(spnScene, spnCamera);
+
+	if (spnCustomRenderTarget == true) {
+		spnRenderer.setRenderTarget(gblRTSecondaryTarget);
 	} else {
-		spnRenderer.render(spnScene, spnCamera); 
-		// spnRenderer.setRenderTarget(gblRTSecondaryTarget); // renders objects and passes renderer info to custom render target "SecondaryTarget"
+		// do nothing
 	}
 
 	stats.end(); // end stats call here
@@ -487,13 +488,15 @@ function spnObjectLoader(path, material, object, x, y, z, xRotate, yRotate, zRot
 function spnCreateRenderTarget(targetName) { // name -- "SecondaryTarget" -- to be rendered into
 	// create a seperate render target for pulling per-pixel data and depth info.
 
-	spnCustomRenderTarget = true;
 	this[globalRenderTarget + targetName] = new THREE.WebGLRenderTarget(spnRenderer.width, spnRenderer.height);
 
 	// ^^ should create a custom render target that gets rendered to ("SecondaryTarget")
 	// ADD A BUFFER FOR GRABBING PER PIXEL INFO
 
+	spnCustomRenderTarget = true;
 	log('a new _render target_ has been created');
 }
 
 // TESTING:
+
+// no testing functions now
