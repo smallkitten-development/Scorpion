@@ -40,7 +40,12 @@ var textureLoader = new THREE.TextureLoader(); // set this here so the code in t
 var isDynamic = false; // is the renderer dynamic?
 var spnCustomRenderTarget = false; // is there a custom render target to render to?
 
+// -- DEV PATH TRACING --
+
 var spnRay = 'ray'; // holds ray info
+var spnRaycaster =  new THREE.Raycaster();
+
+// -- -- -- -- -- -- -- -- 
 
 window.addEventListener('resize', resizeRenderer, false); // resize renderer if the screen size changes
 
@@ -491,17 +496,4 @@ function spnCreateRenderTarget(targetName) { // name -- "SecondaryTarget" -- to 
 	log('a new _render target_ has been created');
 }
 
-// RAY CASTING
-// using this along with the info from the render target should give plenty of info
-
-function spnScreenspaceRaycasting() {
-	log('_RAYCASTER ENABLED_');
-
-	var spnRendererSize = spnRenderer.getSize(); // calculate rays being cast
-	log(spnRendererSize.x * spnRendererSize.y + ' rays being cast');
-
-	this[globalObject + "ScreenspaceVector"] = new THREE.Vector2();
-	this[globalObject + "ScreenspaceVector2"] = new THREE.Vector2(0, 5);
-
-	spnCube('basic', white, 1, 1, 1, globalScreenspaceVector.x, globalScreenspaceVector.y, -2, false, 'VectorCube');
-}
+// TESTING:
