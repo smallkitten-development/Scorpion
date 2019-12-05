@@ -135,7 +135,8 @@ function spnScene(fov, x, y, z, backgroundColor) {
 
 	// ^ sets up scene (spnScene as of rewrite) with a background color
 
-	spnRenderer = new THREE.WebGLRenderer({antialias: true, shadowMapEnabled: true});
+	spnRenderer = new THREE.WebGLRenderer({antialias: true});
+	spnRenderer.shadowMap.enabled = true;
 
 	// ^ sets up a renderer with antialiasing variable and a shadow map
 
@@ -480,6 +481,27 @@ function spnObjectLoader(path, material, object, x, y, z, xRotate, yRotate, zRot
 }
 
 // ^ this should load textures from a material and apply them to an imported mesh
+
+// ---------------------------------------------------------
+// POST PROCESSING:
+
+function spnPostProcessing(scale, shader, renderTarget, swap) {
+	log('post processing ' + shader + 'pass at ' + scale +  ' resolution');
+	var pass;
+
+	postProcessingRT = new THREE.WebGLRenderTarget(spnRenderer.width * scale, spnRenderer.height * scale);
+	postProcessingComposer = new THREE.EffectComposer(spnRenderer, postProcessingRT);
+
+	postProcessingComposer.addPass(new THREE.RenderPass(spnScene, spnCamera));
+
+	pass = new THREE.ShaderPass(shader);
+	pass.needsSwap = swap;
+
+	postProcessingComposer.addPass(pass);
+
+	pass.renderToScreen = true;
+}
+
 // ---------------------------------------------------------
 // EXPERIMENTAL AND DEVELOPER FEATURES:
 
