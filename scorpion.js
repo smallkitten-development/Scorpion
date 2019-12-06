@@ -1,8 +1,7 @@
 // Scorpion library engine built on three.js
 // rewritten 10/4/19
 
-log('_scorpion_ v0.2b -- *made by smallkitten development*');
-log('rewritten from scratch on _10/4/19_');
+log('_scorpion_ v0.3b -- *made by smallkitten development*');
 
 var stats = new Stats(); // stats.js by mrdoob
 stats.showPanel(0);
@@ -31,12 +30,22 @@ function spnDebug(bool) {
 var globalObject = 'global'; // for piggy backing dynamic global variables using this[] =
 var scorpionSelectedObject; // for pointer raycast, click an object to fill this
 
+var globalRenderTarget = 'gblRT'; // for globally storing information from the custom render target
+
 var windowWidth = window.innerWidth;
 var windowHeight = window.innerHeight;
 
 var textureLoader = new THREE.TextureLoader(); // set this here so the code in the material creator is easier to read
 
 var isDynamic = false; // is the renderer dynamic?
+var spnCustomRenderTarget = false; // is there a custom render target to render to?
+
+// -- DEV PATH TRACING --
+
+var spnRay = 'ray'; // holds ray info
+var spnRaycaster =  new THREE.Raycaster();
+
+// -- -- -- -- -- -- -- -- 
 
 window.addEventListener('resize', resizeRenderer, false); // resize renderer if the screen size changes
 
@@ -105,7 +114,14 @@ function animate() {
 	stats.begin(); // call the fps monitor here
 
 	requestAnimationFrame(animate);
+
 	spnRenderer.render(spnScene, spnCamera);
+
+	if (spnCustomRenderTarget == true) {
+		spnRenderer.setRenderTarget(gblRTSecondaryTarget);
+	} else {
+		// do nothing
+	}
 
 	stats.end(); // end stats call here
 }
@@ -119,7 +135,8 @@ function spnScene(fov, x, y, z, backgroundColor) {
 
 	// ^ sets up scene (spnScene as of rewrite) with a background color
 
-	spnRenderer = new THREE.WebGLRenderer({antialias: true, shadowMapEnabled: true});
+	spnRenderer = new THREE.WebGLRenderer({antialias: true});
+	spnRenderer.shadowMap.enabled = true;
 
 	// ^ sets up a renderer with antialiasing variable and a shadow map
 
@@ -464,3 +481,44 @@ function spnObjectLoader(path, material, object, x, y, z, xRotate, yRotate, zRot
 }
 
 // ^ this should load textures from a material and apply them to an imported mesh
+
+// ---------------------------------------------------------
+// POST PROCESSING:
+
+function spnPostProcessing(scale, shader, renderTarget, swap) {
+	log('post processing ' + shader + 'pass at ' + scale +  ' resolution');
+	var pass;
+
+	postProcessingRT = new THREE.WebGLRenderTarget(spnRenderer.width * scale, spnRenderer.height * scale);
+	postProcessingComposer = new THREE.EffectComposer(spnRenderer, postProcessingRT);
+
+	postProcessingComposer.addPass(new THREE.RenderPass(spnScene, spnCamera));
+
+	pass = new THREE.ShaderPass(shader);
+	pass.needsSwap = swap;
+
+	postProcessingComposer.addPass(pass);
+
+	pass.renderToScreen = true;
+}
+
+// ---------------------------------------------------------
+// EXPERIMENTAL AND DEVELOPER FEATURES:
+
+// SECONDARY RENDER TARGET:
+
+function spnCreateRenderTarget(targetName) { // name -- "SecondaryTarget" -- to be rendered into
+	// create a seperate render target for pulling per-pixel data and depth info.
+
+	this[globalRenderTarget + targetName] = new THREE.WebGLRenderTarget(spnRenderer.width, spnRenderer.height);
+
+	// ^^ should create a custom render target that gets rendered to ("SecondaryTarget")
+	// ADD A BUFFER FOR GRABBING PER PIXEL INFO
+
+	spnCustomRenderTarget = true;
+	log('a new _render target_ has been created');
+}
+
+// TESTING:
+
+// no testing functions now
